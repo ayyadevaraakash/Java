@@ -1,0 +1,1 @@
+All file names are purposely appended with an s so that it won't clash with Java util classes and interfaces

@@ -15,10 +15,10 @@ public class LeapYear {
 
 // Logic notes
 
-// Case 1:
+// Condition 1:
 // If a number is divisible by 400 then it's a leap year
 
-// Case 2:
+// Condition 2:
 // If a number is divisible by 4 but at the same time it should not be divisible
 // by 100
 

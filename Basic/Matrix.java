@@ -1,4 +1,4 @@
-// Addition of two matrices. Difference can be obtained by changing + sign with a -
+// Addition of two matrices. Difference can be obtained by changing + sign with a - on line 33
 
 import java.util.Scanner;
 

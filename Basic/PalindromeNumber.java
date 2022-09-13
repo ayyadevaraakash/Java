@@ -10,7 +10,7 @@ public class PalindromeNumber {
     while (enteredNumber > 0) {
       remainder = enteredNumber % 10;
       reversedNumber = reversedNumber * 10 + remainder;
-      enteredNumber = enteredNumber / 10;
+      enteredNumber /= 10;
     }
     System.out.println("Original Number: " + copyOfEnteredNumber);
     System.out.println("Reversed Number: " + reversedNumber);

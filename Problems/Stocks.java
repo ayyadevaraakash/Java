@@ -4,7 +4,7 @@
 
 public class Stocks {
     public static void main(String[] args) {
-        int[] stocks = { 7, 1, 5, 3, 6, 4 };
+        int[] stocks = { 5, 6, 12, 8, 9, 1 };
         int left = 0, right = 1, maxProfit = 0, buy = 0, sell = 1;
 
         while (right < stocks.length) {
@@ -23,7 +23,11 @@ public class Stocks {
         // normal people will look at the array from day 1 not day 0
         buy++;
         sell++;
-        System.out.println("Buy on day: " + buy + "\nSell on day: " + sell);
-        System.out.println("Maximum Profit: " + maxProfit);
+        if (maxProfit == 0)
+            System.out.println("Loss");
+        else {
+            System.out.println("Buy on day: " + buy + "\nSell on day: " + sell);
+            System.out.println("Maximum Profit: " + maxProfit);
+        }
     }
 }

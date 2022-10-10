@@ -14,7 +14,7 @@ class MatrixRotation {
     static void rotateMatrix(int[][] mat, int rowCount, int columnCount) {
         int m = 0, n = rowCount - 1;
 
-        // Swapping Process
+        // Swapping Process (swap rows)
         for (int i = 0; i < rowCount / 2; i++) {
             for (int j = 0; j < columnCount; j++) {
                 int temp = mat[m][j];
@@ -63,3 +63,12 @@ class MatrixRotation {
         sc.close();
     }
 }
+
+// Logic
+
+/*
+ * line number 17 and 28 forms the logic. Initially we invert the matrix and
+ * later perform flip operation to obtain the rotated matrix. Inverting can be
+ * achieved from swapping rows, while flipping can be achieved by the replacing
+ * operation.
+ */

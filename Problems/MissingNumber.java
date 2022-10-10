@@ -12,3 +12,5 @@ public class MissingNumber {
         System.out.println("Missing number is " + val);
     }
 }
+
+// EXOR operation with self results in zero

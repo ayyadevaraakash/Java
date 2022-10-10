@@ -6,17 +6,15 @@
 
 public class Duplicate {
     public static void main(String[] args) {
-        int[] nums = { 1, 3, 5, 4, 2, 5, 6 };
+        int[] nums = { 1, 3, 5, 4, 2, 4, 6 };
         int lengthOfNums = nums.length;
-        int n = lengthOfNums - 1;
-        int sumOfN = 0, sumOfInput = 0;
-
-        for (int i = 0; i < lengthOfNums; i++)
-            sumOfInput += nums[i];
-
-        for (int i = 1; i <= n; i++)
-            sumOfN += i;
-
-        System.out.println("Duplicate number is " + (sumOfInput - sumOfN));
+        int val = nums[0];
+        for (int i = 1; i < lengthOfNums; i++)
+            val ^= nums[i];
+        for (int i = 1; i < lengthOfNums; i++)
+            val ^= i;
+        System.out.println("Repeated number is " + val);
     }
 }
+
+// EXOR with self results in zero

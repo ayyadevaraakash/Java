@@ -26,3 +26,10 @@ class CyclicRotation {
         System.out.println(Arrays.toString(arr));
     }
 }
+
+// Logic
+
+/*
+ * Do reverse operation from partition. Resulting array will be a cyclic rotated
+ * array
+ */

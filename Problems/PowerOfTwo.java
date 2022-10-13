@@ -14,3 +14,9 @@ class PowerOfTwo {
         sc.close();
     }
 }
+
+// Logic Notes
+/*
+ * Rule:
+ * If a is power of 2, then a AND (a-1) will always yield 0
+ */

@@ -37,3 +37,11 @@ class PairsWithSum {
         sc.close();
     }
 }
+
+// Logic Notes
+/*
+ * If the difference of required sum and current element is found in hashmap,
+ * then increment count by frequency of that element.
+ * If not, then add current element to hashmap. Also, if current element is
+ * already present in hashmap, then increment its frequency.
+ */

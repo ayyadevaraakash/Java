@@ -4,7 +4,7 @@
 
 public class Stocks {
     public static void main(String[] args) {
-        int[] stocks = { 5, 6, 12, 8, 9, 1 };
+        int[] stocks = { 5, 6, 12, 1, 12, 12 };
         int left = 0, right = 1, maxProfit = 0, buy = 0, sell = 1;
 
         while (right < stocks.length) {
@@ -31,3 +31,11 @@ public class Stocks {
         }
     }
 }
+
+// Logic Notes
+/*
+ * Take 2 pointers, keep one on first day and one on second day.
+ * If left pointer is greater than right, then it means loss so update left
+ * pointer to point to current right.
+ * If not, then check current profit and update maximum.
+ */

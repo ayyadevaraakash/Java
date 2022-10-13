@@ -13,7 +13,7 @@ class PairsWithSum {
         int count = 0;
         for (int i = 0; i < arr.length; i++) {
             if (occurrence.containsKey(reqSum - arr[i]))
-                count++;
+                count += occurrence.get(reqSum - arr[i]);
             if (occurrence.containsKey(arr[i]))
                 occurrence.put(arr[i], occurrence.get(arr[i]) + 1);
             else

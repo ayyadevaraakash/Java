@@ -31,3 +31,9 @@ public class ZeroOneTwo {
         System.out.println("Sorted Array: " + Arrays.toString(arr));
     }
 }
+
+// Logic Notes
+
+/*
+ * Do some good research on dutch national flag problem
+ */

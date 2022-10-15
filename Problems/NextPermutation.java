@@ -42,3 +42,17 @@ public class NextPermutation {
     System.out.println("Next Permutation: " + Arrays.toString(permutation));
   }
 }
+
+// Logic Notes
+
+/*
+ * Algorithm:
+ * 1. Find the first non-increasing number starting from RHS (say we got it at p
+ * index)
+ * 2. Place a pointer at p + 1 (say q)
+ * 3. Swap array[p] with the first number greater than it starting from RHS
+ * 4. Reverse the array from q to the end
+ * 
+ * If we don't have any p from step 1, then simply reverse the entire array
+ * 
+ */

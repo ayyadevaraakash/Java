@@ -10,8 +10,10 @@ public class ThreeSorted {
     ArrayList<Integer> myList = new ArrayList<>();
 
     while (i < arr1.length && j < arr2.length && k < arr3.length) {
+
       if (arr1[i] == arr2[j] && arr2[j] == arr3[k]) {
-        myList.add(arr1[i]);
+        if (!myList.contains(arr1[i]))
+          myList.add(arr1[i]);
         i++;
         j++;
         k++;
@@ -20,14 +22,6 @@ public class ThreeSorted {
       else if (arr2[j] < arr3[k])
         j++;
       else
-        k++;
-
-      // to tackle repetition
-      while (arr1[i] == arr1[i - 1])
-        i++;
-      while (arr2[j] == arr2[j - 1])
-        j++;
-      while (arr3[k] == arr3[k - 1])
         k++;
 
     }

@@ -24,3 +24,10 @@ public class ParenthesisChecker {
 
   }
 }
+
+// Logic
+
+/*
+ * If there are any valid parenthesis then the length should decrease, If that
+ * doesn't happen we set flag to false and it's done
+ */

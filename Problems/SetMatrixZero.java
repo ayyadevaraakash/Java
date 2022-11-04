@@ -35,3 +35,13 @@ public class SetMatrixZero {
 
   }
 }
+
+/*
+ * Logic
+ * 
+ * 1. Create two arrays, row list and column list which we will be using to mark
+ * the location of row and column having a zero.
+ * 2. Traverse the array and update row list and column list.
+ * 3. Again traverse the array, but this time if the current row belongs to row
+ * list OR current column belongs to column list then assign a zero.
+ */

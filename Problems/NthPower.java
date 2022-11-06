@@ -18,12 +18,12 @@ class NthPower {
       int mid = (low + high) / 2;
       int res = multiplier(mid, root);
       if (res == number) {
-        answer = res;
+        answer = mid;
         break;
-      } else if (res < mid)
-        high = mid;
-      else
+      } else if (res < number)
         low = mid;
+      else
+        high = mid;
     }
 
     System.out.println("Result: " + answer);

@@ -1,4 +1,4 @@
-// Problem: Calculate nth root of a number
+// Problem: Calculate nth root of a number (not to use any built-in method)
 
 class NthPower {
 

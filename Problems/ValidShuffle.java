@@ -43,11 +43,7 @@ public class ValidShuffle {
     String text2 = "123";
     String shuffleText = "X12Y3Z";
 
-    boolean isValid = true;
-
-    isValid = checkValidShuffle(text1, text2, shuffleText);
-
-    if (isValid)
+    if (checkValidShuffle(text1, text2, shuffleText))
       System.out.println("Valid Shuffle");
     else
       System.out.println("Not a valid shuffle");

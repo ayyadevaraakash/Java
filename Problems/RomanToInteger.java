@@ -13,5 +13,16 @@ public class RomanToInteger {
     correspondence.put('D', 500);
     correspondence.put('M', 1000);
 
+    String inputRoman = "VII";
+    int length = inputRoman.length();
+    int integerResult = 0;
+
+    for (int i = length - 1; i >= 0; i--) {
+      if (i < length - 1 && correspondence.get(inputRoman.charAt(i)) < correspondence.get(inputRoman.charAt(i + 1)))
+        integerResult -= correspondence.get(inputRoman.charAt(i));
+      else
+        integerResult += correspondence.get(inputRoman.charAt(i));
+    }
+    System.out.println(inputRoman + ": " + integerResult);
   }
 }

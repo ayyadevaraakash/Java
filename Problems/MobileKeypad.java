@@ -14,8 +14,9 @@ class MobileKeypad {
     keypad.put("WXYZ", '9');
 
     char[] sameCharacters = { '1', '0', '*', '#', ' ' };
-    String inputSentence = "HELLO WORLD";
+    String inputSentence = "GEEKSFORGEEKS";
     int length = inputSentence.length();
+    System.out.print("Numeric Sequence: ");
 
     for (int i = 0; i < length; i++) {
       if (Arrays.binarySearch(sameCharacters, inputSentence.charAt(i)) >= 0)
@@ -24,7 +25,13 @@ class MobileKeypad {
         int copy = i;
         keypad.forEach((k, v) -> {
           if (k.contains(String.valueOf(inputSentence.charAt(copy)))) {
-            System.out.print(v);
+            for (int j = 0; j < k.length(); j++) {
+              if (inputSentence.charAt(copy) == k.charAt(j)) {
+                System.out.print(v);
+                break;
+              }
+              System.out.print(v);
+            }
           }
         });
       }

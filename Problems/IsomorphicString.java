@@ -1,3 +1,5 @@
+// Problem: https://practice.geeksforgeeks.org/problems/isomorphic-strings/0
+
 import java.util.HashMap;
 
 class IsomorphicString {

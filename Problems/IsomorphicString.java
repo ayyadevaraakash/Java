@@ -20,7 +20,6 @@ class IsomorphicString {
         }
       }
     }
-
     System.out.println("Isomorphic: " + flag);
   }
 }

@@ -26,8 +26,8 @@ public class UseComparator {
   public static void main(String[] args) {
     Student[] students = new Student[3];
     students[0] = new Student("Akash", 560, 23);
-    students[1] = new Student("Rucha", 600, 22);
-    students[2] = new Student("Prachi", 520, 20);
+    students[1] = new Student("Sneha", 600, 22);
+    students[2] = new Student("Jitendra", 520, 20);
 
     Arrays.sort(students, (a, b) -> b.marks - a.marks);
 

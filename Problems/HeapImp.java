@@ -42,6 +42,8 @@ class Heap {
         size--;
 
         // Move the root node and all nodes to appropriate position
+        // Start the code from below with curIndex = target for heapify process for
+        // target-rooted tree
         int curIndex = 0;
 
         while (curIndex < size) {

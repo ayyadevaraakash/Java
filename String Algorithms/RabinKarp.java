@@ -24,12 +24,11 @@ public class RabinKarp {
                 if (j == P) {
                     res.add(i);
                 }
-            } else {
-                if (i < T - P) {
-                    tHash = (d * (tHash - text.charAt(i) * H) + text.charAt(i + P)) % prime;
-                    if (tHash < 0) {
-                        tHash += prime;
-                    }
+            }
+            if (i < T - P) {
+                tHash = (d * (tHash - text.charAt(i) * H) + text.charAt(i + P)) % prime;
+                if (tHash < 0) {
+                    tHash += prime;
                 }
             }
         }

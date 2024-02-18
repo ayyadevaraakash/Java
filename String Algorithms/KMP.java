@@ -5,7 +5,7 @@ public class KMP {
         int idx = 0, i = 1;
         while (i < P) {
             if (pattern.charAt(idx) == pattern.charAt(i)) {
-                LPS[i] = LPS[idx] + 1;
+                LPS[i] = idx + 1;
                 idx++;
                 i++;
             } else {
@@ -39,6 +39,10 @@ public class KMP {
                     i++;
                 }
             }
+        }
+
+        if (j == P) {
+            res.add(i - P);
         }
     }
 

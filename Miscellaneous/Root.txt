@@ -1,0 +1,84 @@
+----------------------------------------
+SQUARE ROOT USING NEWTON RAPHSON METHOD
+----------------------------------------
+
+
+class Solution {
+    public int mySqrt(int x) {
+        double guess = x / 2.0;
+        double epsilon = 1e-9;
+        
+        while (Math.abs(guess * guess - x) > epsilon) {
+            guess = 0.5 * (guess + x / guess);
+        }
+        
+        return guess;
+    }
+}
+
+
+--------------------------------
+SQUARE ROOT USING BINARY SEARCH
+--------------------------------
+
+class Solution {
+    public double mySqrt(int x) {
+        double low = 0, high = x, epsilon = 1e-9;
+        
+        while (high - low > epsilon) {
+            double mid = low + (high - low) / 2;
+            double guess = mid * mid;
+            
+            if (guess == x) {
+                return mid;
+            } else if (guess > x) {
+                high = mid;
+            } else {
+                low = mid;
+            }
+        }
+        
+        return low + (high - low) / 2;
+    }
+}
+
+
+-----------------------------
+NTH ROOT USING BINARY SEARCH
+-----------------------------
+
+
+public static double multiply(double a, int b) {
+    double res = 1.0;
+    while (b > 0) {
+        if (b % 2 == 0) {
+            a = a * a;
+            b /= 2;
+        } else {
+            res = res * a;
+            b--;
+        }
+    }
+    return res;
+}
+
+class Solution {
+    public double root(int x, int n) {
+        double low = 0, high = x, epsilon = 1e-9;
+        
+        while (high - low > epsilon) {
+            double mid = low + (high - low) / 2;
+            double guess = multiply(mid, n);
+            
+            if (guess == x) {
+                return mid;
+            } else if (guess > x) {
+                high = mid;
+            } else {
+                low = mid;
+            }
+        }
+        
+        return low + (high - low) / 2;
+    }
+}

@@ -1,0 +1,844 @@
+---------------
+DFS OF A GRAPH
+---------------
+
+class Solution {
+    public void f(int node, boolean[] vis, ArrayList < Integer > res, ArrayList < ArrayList < Integer >> adj) {
+
+        vis[node] = true;
+        res.add(node);
+
+        for (Integer neighbor: adj.get(node)) {
+            if (!vis[neighbor]) {
+                f(neighbor, vis, res, adj);
+            }
+        }
+    }
+
+    public ArrayList < Integer > dfsOfGraph(int V, ArrayList < ArrayList < Integer >> adj) {
+        ArrayList < Integer > res = new ArrayList < > ();
+        boolean[] vis = new boolean[V];
+        f(0, vis, res, adj);
+        return res;
+    }
+}
+
+
+---------------
+BFS OF A GRAPH
+---------------
+
+class Solution {
+    public ArrayList < Integer > bfsOfGraph(int V, ArrayList < ArrayList < Integer >> adj) {
+
+        ArrayList < Integer > res = new ArrayList < > ();
+        Queue < Integer > q = new LinkedList < > ();
+        boolean[] vis = new boolean[V];
+
+        q.add(0);
+        vis[0] = true;
+
+        while (!q.isEmpty()) {
+            int size = q.size();
+
+            for (int i = 0; i < size; i++) {
+                int p = q.poll();
+                res.add(p);
+
+                for (Integer neighbor: adj.get(p)) {
+                    if (!vis[neighbor]) {
+                        q.add(neighbor);
+                        vis[neighbor] = true;
+                    }
+                }
+            }
+        }
+
+        return res;
+    }
+}
+
+
+-----------------------------------------
+DETECT A CYCLE IN UNDIRECTED GRAPH - DFS
+-----------------------------------------
+
+class Solution {
+    public boolean f(int node, int parent, ArrayList < ArrayList < Integer >> adj, boolean[] vis) {
+
+        vis[node] = true;
+
+        for (Integer neighbor: adj.get(node)) {
+            if (!vis[neighbor]) {
+                if (f(neighbor, node, adj, vis)) {
+                    return true;
+                }
+            } else {
+                if (neighbor != parent) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isCycle(int V, ArrayList < ArrayList < Integer >> adj) {
+        boolean[] vis = new boolean[V];
+
+        for (int i = 0; i < V; i++) {
+            if (!vis[i]) {
+                if (f(i, -1, adj, vis)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+}
+
+
+-----------------------------------------
+DETECT A CYCLE IN UNDIRECTED GRAPH - BFS
+-----------------------------------------
+
+class Solution {
+    public boolean f(int node, ArrayList < ArrayList < Integer >> adj, boolean[] vis) {
+
+        Queue < int[] > q = new LinkedList < > ();
+        q.add(new int[] {node, -1});
+        vis[node] = true;
+
+        while (!q.isEmpty()) {
+            int size = q.size();
+
+            for (int i = 0; i < size; i++) {
+
+                int[] cur = q.poll();
+
+                for (Integer neighbor: adj.get(cur[0])) {
+
+                    if (!vis[neighbor]) {
+                        vis[neighbor] = true;
+                        q.add(new int[] {neighbor, cur[0]});
+                    } else {
+                        if (neighbor != cur[1]) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isCycle(int V, ArrayList < ArrayList < Integer >> adj) {
+        boolean[] vis = new boolean[V];
+
+        for (int i = 0; i < V; i++) {
+            if (!vis[i]) {
+                if (f(i, adj, vis)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+}
+
+
+--------------------------------------
+CHECK IF THE GRAPH IS BIPARTITE - DFS
+--------------------------------------
+
+class Solution {
+    public boolean dfs(int node, int c, ArrayList<ArrayList<Integer>> adj, int[] color) {
+        color[node] = c;
+
+        for (Integer neighbor : adj.get(node)) {
+            if (color[neighbor] == -1) {
+                if (!dfs(neighbor, 1 - color[node], adj, color)) {
+                    return false;
+                }
+            } else {
+                if (color[neighbor] == color[node]) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public boolean isBipartite(int V, ArrayList<ArrayList<Integer>> adj) {
+        int[] color = new int[V];
+        Arrays.fill(color, -1);
+
+        for (int i = 0; i < V; i++) {
+            if (color[i] == -1) {
+                if (dfs(i, 0, adj, color) == false) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+}
+
+
+--------------------------------------
+CHECK IF THE GRAPH IS BIPARTITE - BFS
+--------------------------------------
+
+class Solution {
+    public boolean bfs(int node, ArrayList<ArrayList<Integer>> adj, int[] color) {
+        Queue<Integer> q = new LinkedList<>();
+        q.add(node);
+        color[node] = 0;
+
+        while (!q.isEmpty()) {
+            Integer cur = q.poll();
+
+            for (Integer neighbor : adj.get(cur)) {
+                if (color[neighbor] == -1) {
+                    color[neighbor] = 1 - color[cur];
+                    q.add(neighbor);
+                } else {
+                    if (color[neighbor] == color[cur]) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public boolean isBipartite(int V, ArrayList<ArrayList<Integer>> adj) {
+        int[] color = new int[V];
+        Arrays.fill(color, -1);
+
+        for (int i = 0; i < V; i++) {
+            if (color[i] == -1) {
+                if (bfs(i, adj, color) == false) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+}
+
+
+--------------------------
+TOPOLOGICAL SORTING - DFS
+--------------------------
+
+class Solution {
+    private static void dfs(int node, int[] v, ArrayList<ArrayList<Integer>> adj, Stack<Integer> st) {
+
+        v[node] = 1;
+
+        for (int i : adj.get(node)) {
+            if (v[i] == 0) {
+                dfs(i, v, adj, st);
+            }
+        }
+
+        st.push(node);
+    }
+
+    static int[] topoSort(int V, ArrayList<ArrayList<Integer>> adj) {
+        int[] v = new int[V];
+        int[] res = new int[V];
+
+        Stack<Integer> st = new Stack<>();
+
+        for (int i = 0; i < V; i++) {
+            if (v[i] == 0) {
+                dfs(i, v, adj, st);
+            }
+        }
+
+        int i = 0;
+        
+        while (!st.isEmpty()) {
+            res[i++] = st.pop();
+        }
+
+        return res;
+    }
+}
+
+
+---------------------------------------------
+TOPOLOGICAL SORTING - BFS (KAHN'S ALGORITHM)
+---------------------------------------------
+
+class Solution {
+    static int[] topoSort(int V, ArrayList<ArrayList<Integer>> adj) {
+        int[] topo = new int[V];
+        int[] inDegree = new int[V];
+
+        for (ArrayList<Integer> cur : adj) {
+            for (Integer i : cur) {
+                inDegree[i]++;
+            }
+        }
+
+        Queue<Integer> q = new LinkedList<>();
+
+        for (int i = 0; i < V; i++) {
+            if (inDegree[i] == 0) {
+                q.add(i);
+            }
+        }
+
+        int p = 0;
+
+        while (!q.isEmpty()) {
+            Integer cur = q.poll();
+            topo[p++] = cur;
+
+            for (Integer neighbor : adj.get(cur)) {
+
+                inDegree[neighbor]--;
+
+                if (inDegree[neighbor] == 0) {
+                    q.add(neighbor);
+                }
+            }
+        }
+
+        return topo;
+    }
+}
+
+
+---------------------------------------
+DETECT A CYCLE IN DIRECTED GRAPH - DFS
+---------------------------------------
+
+class Solution {
+    public boolean dfs(int node, ArrayList<ArrayList<Integer>> adj, boolean[] vis, boolean[] pv) {
+
+        vis[node] = true;
+        pv[node] = true;
+
+        for (Integer neighbor : adj.get(node)) {
+
+            if (!vis[neighbor]) {
+                if (dfs(neighbor, adj, vis, pv)) {
+                    return true;
+                }
+            } else if (vis[neighbor] && pv[neighbor]) {
+                return true;
+            }
+
+        }
+
+        pv[node] = false;
+        return false;
+    }
+
+    public boolean isCyclic(int V, ArrayList<ArrayList<Integer>> adj) {
+        boolean[] vis = new boolean[V];
+        boolean[] pv = new boolean[V];
+
+        for (int i = 0; i < V; i++) {
+            if (!vis[i]) {
+                if (dfs(i, adj, vis, pv)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+}
+
+
+----------------------------------------------------------
+DETECT A CYCLE IN DIRECTED GRAPH - BFS (KAHN'S ALGORITHM)
+----------------------------------------------------------
+
+class Solution {
+    public void bfs(int node, ArrayList<ArrayList<Integer>> adj, int[] cnt, int V) {
+
+        Queue<Integer> q = new LinkedList<>();
+
+        int[] inDegree = new int[V];
+
+        for (ArrayList<Integer> cur : adj) {
+            for (Integer i : cur) {
+                inDegree[i]++;
+            }
+        }
+
+        for (int i = 0; i < V; i++) {
+            if (inDegree[i] == 0) {
+                q.add(i);
+            }
+        }
+
+        while (!q.isEmpty()) {
+
+            Integer cur = q.poll();
+            cnt[0]++;
+
+            for (Integer neighbor : adj.get(cur)) {
+
+                inDegree[neighbor]--;
+
+                if (inDegree[neighbor] == 0) {
+                    q.add(neighbor);
+                }
+
+            }
+        }
+    }
+
+    public boolean isCyclic(int V, ArrayList<ArrayList<Integer>> adj) {
+        int[] topoCnt = new int[1];
+        bfs(0, adj, topoCnt, V);
+        return topoCnt[0] == V ? false : true;
+    }
+}
+
+
+---------------------------------------------------
+DIJKSTRA'S ALGORITHM (SINGLE SOURCE SHORTEST PATH)
+---------------------------------------------------
+
+class Solution {
+    static int[] dijkstra(int V, ArrayList<ArrayList<ArrayList<Integer>>> adj, int S) {
+
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+
+        pq.add(new int[] {0, S});
+        int[] cost = new int[V];
+
+        for (int i = 0; i < V; i++) {
+            cost[i] = (int) (1e9);
+        }
+
+        cost[S] = 0;
+
+        while (!pq.isEmpty()) {
+
+            int[] cur = pq.poll();
+
+            for (ArrayList<Integer> neighbor : adj.get(cur[1])) {
+
+                int node = neighbor.get(0);
+                int weight = neighbor.get(1);
+
+                if (cur[0] + weight < cost[node]) {
+                    cost[node] = cur[0] + weight;
+                    pq.add(new int[] {cost[node], node});
+                }
+            }
+        }
+
+        return cost;
+    }
+}
+
+
+-----------------------------------------------------
+BELLMAN FORD ALGORITHM (SINGLE SOURCE SHORTEST PATH)
+-----------------------------------------------------
+
+class Solution {
+    static int[] bellman_ford(int V, ArrayList<ArrayList<Integer>> edges, int S) {
+        int[] cost = new int[V];
+
+        for (int i = 0; i < V; i++) {
+            cost[i] = 100_000_000;
+        }
+
+        cost[S] = 0;
+
+        for (int i = 0; i < V - 1; i++) {
+            for (ArrayList<Integer> edge : edges) {
+
+                int node = edge.get(1);
+                int weight = edge.get(2);
+
+                if (cost[edge.get(0)] != 100_000_000 && cost[edge.get(0)] + weight < cost[node]) {
+
+                    cost[node] = cost[edge.get(0)] + weight;
+
+                }
+            }
+        }
+
+        for (ArrayList<Integer> edge : edges) {
+
+            int node = edge.get(1);
+            int weight = edge.get(2);
+
+            if (cost[edge.get(0)] != 100_000_000 && cost[edge.get(0)] + weight < cost[node]) {
+                return new int[] {-1};
+            }
+
+        }
+
+        return cost;
+    }
+}
+
+
+------------------------------------------------------
+FLOYD WARSHALL ALGORITHM (MULTI SOURCE SHORTEST PATH)
+------------------------------------------------------
+
+class Solution {
+    public void shortest_distance(int[][] matrix) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix.length; j++) {
+                if (matrix[i][j] == -1) {
+                    matrix[i][j] = 1_000_000_000;
+                }
+            }
+        }
+
+        for (int k = 0; k < matrix.length; k++) {
+            for (int i = 0; i < matrix.length; i++) {
+                for (int j = 0; j < matrix.length; j++) {
+                    matrix[i][j] = Math.min(matrix[i][j], matrix[i][k] + matrix[k][j]);
+                }
+            }
+        }
+
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix.length; j++) {
+                if (matrix[i][j] == 1_000_000_000) {
+                    matrix[i][j] = -1;
+                }
+            }
+        }
+    }
+}
+
+
+-------------------------------------------
+PRIM'S ALGORITHM FOR MINIMUM SPANNING TREE
+-------------------------------------------
+
+class Pair {
+    int node;
+    int weight;
+    
+    Pair (int node, int weight) {
+        this.node = node;
+        this.weight = weight;
+    }
+}
+
+class Solution {
+	static int spanningTree(int V, int E, int edges[][]) {
+	    ArrayList<ArrayList<Pair>> adj = new ArrayList<>();
+	    
+	    for (int i = 0; i < V; i++) {
+	        adj.add(new ArrayList<>());
+	    }
+	    
+	    for (int[] edge : edges) {
+	        adj.get(edge[0]).add(new Pair(edge[1], edge[2]));
+	        adj.get(edge[1]).add(new Pair(edge[0], edge[2]));
+	    }
+	    
+	    PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+	    
+	    boolean[] vis = new boolean[V];
+	    
+	    pq.add(new int[]{0, 0});
+	    
+	    int res = 0;
+	    
+	    while (!pq.isEmpty()) {
+	        
+	        int[] cur = pq.poll();
+	        
+	        if (vis[cur[1]]) {
+	            continue;
+	        }
+	        
+	        vis[cur[1]] = true;
+	        
+	        res += cur[0];
+	        
+	        for (Pair neighbor : adj.get(cur[1])) {
+	            pq.add(new int[]{neighbor.weight, neighbor.node});
+	        }
+	        
+	    }
+	    
+	    return res;
+	}
+}
+
+
+----------------------------------------------
+KRUSKAL'S ALGORITHM FOR MINIMUM SPANNING TREE
+----------------------------------------------
+
+class DisjointSet {
+    int[] rank;
+    int[] parent;
+
+    DisjointSet(int n) {
+        rank = new int[n];
+        parent = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+    }
+
+    int findUParent(int node) {
+
+        if (node == parent[node]) {
+            return node;
+        }
+
+        return parent[node] = findUParent(parent[node]);
+    }
+
+    void unionByRank(int u, int v) {
+
+        int ulp_u = findUParent(u), ulp_v = findUParent(v);
+
+        if (ulp_u == ulp_v) {
+            return;
+        }
+
+        if (rank[ulp_u] > rank[ulp_v]) {
+            parent[ulp_v] = ulp_u;
+        } else if (rank[ulp_v] > rank[ulp_u]) {
+            parent[ulp_u] = ulp_v;
+        } else {
+            parent[ulp_u] = ulp_v;
+            rank[ulp_v]++;
+        }
+    }
+}
+
+class Solution {
+    static int spanningTree(int V, int E, int edges[][]) {
+
+        DisjointSet ds = new DisjointSet(V);
+        Arrays.sort(edges, (a, b) -> a[2] - b[2]);
+
+        int res = 0;
+
+        for (int[] edge : edges) {
+            if (ds.findUParent(edge[0]) != ds.findUParent(edge[1])) {
+                ds.unionByRank(edge[0], edge[1]);
+                res += edge[2];
+            }
+        }
+
+        return res;
+    }
+}
+
+
+-------------------------------------------------------
+KOSARAJU'S ALGORITHM FOR STRONGLY CONNECTED COMPONENTS
+-------------------------------------------------------
+
+class Solution {
+    public void dfs(int node, ArrayList<ArrayList<Integer>> adj, Stack<Integer> stk, boolean[] vis) {
+
+        vis[node] = true;
+
+        for (Integer neighbor : adj.get(node)) {
+            if (!vis[neighbor]) {
+                dfs(neighbor, adj, stk, vis);
+            }
+        }
+
+        stk.push(node);
+    }
+
+    public void dfs(int node, ArrayList<ArrayList<Integer>> adj, boolean[] vis) {
+        vis[node] = true;
+
+        for (Integer neighbor : adj.get(node)) {
+            if (!vis[neighbor]) {
+                dfs(neighbor, adj, vis);
+            }
+        }
+    }
+
+    public int kosaraju(int V, ArrayList<ArrayList<Integer>> adj) {
+        Stack<Integer> stk = new Stack<>();
+        boolean[] vis = new boolean[V];
+
+        for (int i = 0; i < V; i++) {
+            if (!vis[i]) {
+                dfs(i, adj, stk, vis);
+            }
+        }
+
+        ArrayList<ArrayList<Integer>> transpose = new ArrayList<>();
+
+        for (int i = 0; i < V; i++) {
+            vis[i] = false;
+            transpose.add(new ArrayList<>());
+        }
+
+        for (int i = 0; i < V; i++) {
+            for (Integer it : adj.get(i)) {
+                transpose.get(it).add(i);
+            }
+        }
+
+        int scc = 0;
+
+        while (!stk.isEmpty()) {
+            Integer cur = stk.pop();
+
+            if (!vis[cur]) {
+                scc++;
+                dfs(cur, transpose, vis);
+            }
+        }
+
+        return scc;
+    }
+}
+
+
+----------------------------------------------
+TARJAN'S ALGORITHM TO FIND BRIDGES IN A GRAPH
+----------------------------------------------
+
+class Solution {
+    private int timer = 0;
+    
+    private void dfs(int node, int parent, boolean[] vis, int[] tin, int[] low, List<List<Integer>> bridges, ArrayList<ArrayList<Integer>> adj) {
+
+        vis[node] = true;
+        tin[node] = timer;
+        low[node] = timer;
+        timer++;
+        
+        for (Integer neighbor : adj.get(node)) {
+            
+            if (neighbor == parent) {
+                continue;
+            }
+            
+            if (!vis[neighbor]) {
+                dfs(neighbor, node, vis, tin, low, bridges, adj);
+                low[node] = Math.min(low[node], low[neighbor]);
+                
+                if (tin[node] < low[neighbor]) {
+                    bridges.add(List.of(node, neighbor));
+                }
+            } else {
+                low[node] = Math.min(low[node], low[neighbor]);
+            }
+        
+        }
+    }
+    
+    public List<List<Integer>> criticalConnections(int n, List<List<Integer>> connections) {
+        ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+        
+        for (int i = 0; i < n; i++) {
+            adj.add(new ArrayList<>());
+        }
+        
+        for (List<Integer> cur : connections) {
+            adj.get(cur.get(0)).add(cur.get(1));
+            adj.get(cur.get(1)).add(cur.get(0));
+        }
+        
+        boolean[] vis = new boolean[n];
+        int[] tin = new int[n];
+        int[] low = new int[n];
+        
+        List<List<Integer>> bridges = new ArrayList<>();
+        dfs(0, -1, vis, tin, low, bridges, adj);
+        return bridges;
+    }
+}
+
+
+----------------------------------------------------------
+TARJAN'S ALGORITHM TO FIND ARTICULATION POINTS IN A GRAPH
+----------------------------------------------------------
+
+class Solution {
+    private int timer = 0;
+
+    private void dfs(int node, int parent, boolean[] vis, int[] tin, int[] low, boolean[] mark, ArrayList<ArrayList<Integer>> adj) {
+
+        vis[node] = true;
+        tin[node] = timer;
+        low[node] = timer;
+        timer++;
+
+        int child = 0;
+
+        for (Integer neighbor : adj.get(node)) {
+
+            if (neighbor == parent) {
+                continue;
+            }
+
+            if (!vis[neighbor]) {
+                dfs(neighbor, node, vis, tin, low, mark, adj);
+                low[node] = Math.min(low[node], low[neighbor]);
+
+                if (parent != -1 && low[neighbor] >= tin[node]) {
+                    mark[node] = true;
+                }
+
+                child++;
+            } else {
+                low[node] = Math.min(low[node], tin[neighbor]);
+            }
+        }
+
+        if (parent == -1 && child > 1) {
+            mark[node] = true;
+        }
+    }
+
+    public ArrayList<Integer> articulationPoints(int V, ArrayList<ArrayList<Integer>> adj) {
+        boolean[] vis = new boolean[V];
+        int[] tin = new int[V];
+        int[] low = new int[V];
+        boolean[] mark = new boolean[V];
+
+        for (int i = 0; i < V; i++) {
+            if (!vis[i]) {
+                dfs(i, -1, vis, tin, low, mark, adj);
+            }
+        }
+
+        ArrayList<Integer> res = new ArrayList<>();
+
+        for (int i = 0; i < V; i++) {
+            if (mark[i]) {
+                res.add(i);
+            }
+        }
+
+        if (res.size() == 0) {
+            res.add(-1);
+        }
+
+        return res;
+    }
+}

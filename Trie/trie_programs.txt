@@ -1,0 +1,163 @@
+---------------
+IMPLEMENT TRIE
+---------------
+
+class Node {
+    Node[] links;
+    boolean done;
+    
+    Node() {
+        links = new Node[26];
+        done = false;
+    }
+}
+
+class Trie {
+    Node node;
+    
+    public Trie() {
+        node = new Node();
+    }
+    
+    public void insert(String word) {
+        int N = word.length();
+        
+        Node cur = node;
+        
+        for (int i = 0; i < N; i++) {
+            char ch = word.charAt(i);
+            
+            if (cur.links[ch - 'a'] == null) {
+                cur.links[ch - 'a'] = new Node();
+            }
+            
+            cur = cur.links[ch - 'a'];
+        }
+        
+        cur.done = true;
+    }
+    
+    public boolean search(String word) {
+        int N = word.length();
+        
+        Node cur = node;
+        
+        for (int i = 0; i < N; i++) {
+            char ch = word.charAt(i);
+            
+            if (cur.links[ch - 'a'] == null) {
+                return false;
+            }
+            
+            cur = cur.links[ch - 'a'];
+        }
+        
+        return cur.done;
+    }
+    
+    public boolean startsWith(String prefix) {
+        int N = prefix.length();
+        
+        Node cur = node;
+        
+        for (int i = 0; i < N; i++) {
+            char ch = prefix.charAt(i);
+            
+            if (cur.links[ch - 'a'] == null) {
+                return false;
+            }
+            
+            cur = cur.links[ch - 'a'];
+        }
+        
+        return true;
+    }
+}
+
+
+------------------
+IMPLEMENT TRIE II
+------------------
+
+class TrieNode {
+    TrieNode[] links;
+    int endWord;
+    int cntPrefix;
+
+    TrieNode() {
+        links = new TrieNode[26];
+        endWord = 0;
+        cntPrefix = 0;
+    }
+}
+
+public class Trie {
+    TrieNode node;
+
+    public Trie() {
+        node = new TrieNode();
+    }
+
+    public void insert(String word) {
+        int N = word.length();
+        TrieNode cur = node;
+
+        for (int i = 0; i < N; i++) {
+            char ch = word.charAt(i);
+            if (cur.links[ch - 'a'] == null) {
+                cur.links[ch - 'a'] = new TrieNode();
+            }
+            cur = cur.links[ch - 'a'];
+            cur.cntPrefix++;
+        }
+        
+        cur.endWord++;
+    }
+
+    public int countWordsEqualTo(String word) {
+        int N = word.length();
+        TrieNode cur = node;
+
+        for (int i = 0; i < N; i++) {
+            char ch = word.charAt(i);
+            if (cur.links[ch - 'a'] == null) {
+                return 0;
+            }
+            cur = cur.links[ch - 'a'];
+        }
+
+        return cur.endWord;
+    }
+
+    public int countWordsStartingWith(String word) {
+        int N = word.length();
+        TrieNode cur = node;
+
+        for (int i = 0; i < N; i++) {
+            char ch = word.charAt(i);
+            if (cur.links[ch - 'a'] == null) {
+                return 0;
+            }
+            cur = cur.links[ch - 'a'];
+        }
+
+        return cur.cntPrefix;
+    }
+
+    public void erase(String word) {
+        int N = word.length();
+        TrieNode cur = node;
+
+        for (int i = 0; i < N; i++) {
+            char ch = word.charAt(i);
+            if (cur.links[ch - 'a'] == null) {
+                return;
+            }
+            cur = cur.links[ch - 'a'];
+            cur.cntPrefix--;
+        }
+
+        cur.endWord--;
+    }
+
+}

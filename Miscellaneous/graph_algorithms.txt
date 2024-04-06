@@ -336,7 +336,7 @@ class Solution {
                 if (dfs(neighbor, adj, vis, pv)) {
                     return true;
                 }
-            } else if (vis[neighbor] && pv[neighbor]) {
+            } else if (pv[neighbor]) {
                 return true;
             }
 

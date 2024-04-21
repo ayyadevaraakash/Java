@@ -416,15 +416,13 @@ DIJKSTRA'S ALGORITHM (SINGLE SOURCE SHORTEST PATH)
 ---------------------------------------------------
 
 class Solution {
-    static int[] dijkstra(int V, ArrayList<ArrayList<ArrayList<Integer>>> adj, int S) {
-
-        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+    void dijkstra(int V, ArrayList < ArrayList < int[] >> adj, int S, int[] cost) {
+        PriorityQueue < int[] > pq = new PriorityQueue < > ((a, b) -> a[0] - b[0]);
 
         pq.add(new int[] {0, S});
-        int[] cost = new int[V];
 
         for (int i = 0; i < V; i++) {
-            cost[i] = (int) (1e9);
+            cost[i] = (int)(1e9);
         }
 
         cost[S] = 0;
@@ -433,19 +431,19 @@ class Solution {
 
             int[] cur = pq.poll();
 
-            for (ArrayList<Integer> neighbor : adj.get(cur[1])) {
+            for (int[] neighbor: adj.get(cur[1])) {
 
-                int node = neighbor.get(0);
-                int weight = neighbor.get(1);
+                int node = neighbor[0];
+                int weight = neighbor[1];
 
                 if (cur[0] + weight < cost[node]) {
                     cost[node] = cur[0] + weight;
-                    pq.add(new int[] {cost[node], node});
+                    pq.add(new int[] {
+                        cost[node], node
+                    });
                 }
             }
         }
-
-        return cost;
     }
 }
 

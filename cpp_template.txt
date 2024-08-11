@@ -1,0 +1,50 @@
+-------------------------
+CONSTANTS
+-------------------------
+
+static constexpr int M = 1000000007;
+
+static constexpr int MAX = 1000000000;
+
+static constexpr int MIN = -1000000000;
+
+static constexpr long long LMAX = 100000000000000000;
+
+static constexpr long long LMIN = -100000000000000000;
+
+-------------------------
+MIN HEAP
+-------------------------
+
+template<typename T>
+using min_heap = priority_queue<T, vector<T>, greater<T>>;
+
+-------------------------
+SPLIT FUNCTION
+-------------------------
+
+vector<string> split(const string& text, char delimiter) {
+    vector<string> result;
+    string token;
+    stringstream ss(text);
+    
+    while (getline(ss, token, delimiter)) {
+        result.push_back(move(token));
+    }
+    
+    return result;
+}
+
+-------------------------
+DEFAULT CODE TEMPLATE
+-------------------------
+#include <bits/stdc++.h>
+using namespace std;
+
+int main () {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+
+	return 0;
+}
+-------------------------

@@ -1,3 +1,6 @@
+CPP priority_queue is "MAX_HEAP"
+Java priority_queue is "MIN_HEAP"
+
 C plus plus comparator:
 
 sort(v.begin(), v.end(), [](auto &a, auto &b){
@@ -20,3 +23,4 @@ PriorityQueue:
 PriorityQueue<Student> pq = new PriorityQueue<>(
     (o1, o2) -> Integer.compare(o1.marks, o2.marks)
 );
+

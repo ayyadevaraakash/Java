@@ -1,0 +1,22 @@
+C plus plus comparator:
+
+sort(v.begin(), v.end(), [](auto &a, auto &b){
+    return b.second < a.second;
+});
+
+PriorityQueue:
+struct Compare {
+    bool operator()(parameters) {}
+};
+
+#define pair<int,int> pp
+priority_queue<pp, vector<pp>, Compare> pq;
+
+JAVA comparator:
+
+(o1, o2) -> Integer.compare(o1.marks, o2.marks)
+
+PriorityQueue:
+PriorityQueue<Student> pq = new PriorityQueue<>(
+    (o1, o2) -> Integer.compare(o1.marks, o2.marks)
+);

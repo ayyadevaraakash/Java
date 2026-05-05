@@ -12,7 +12,7 @@ struct Compare {
     bool operator()(parameters) {}
 };
 
-#define pair<int,int> pp
+#define pp pair<int,int>
 priority_queue<pp, vector<pp>, Compare> pq;
 
 JAVA comparator:

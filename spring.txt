@@ -1,0 +1,286 @@
+What is IOC Container?
+An IoC Container (Inversion of Control Container) is a tool or storage space used to manage the lifecycle of objects in an application.
+
+What is IOC?
+Earlier we used to manually create objects using the new keyword, but now the container automatically creates them, resolves their dependencies, and injects them where they are needed. This process is called Inversion of Control
+
+Beans?
+When we create and manage objects, it is called as objects, but when it is created and managed in IOC container, we call it as beans
+
+Bean Lifecycle
+It is simply the life of bean from creation to destruction, It consists of these phases
+1. Instantiation - IOC container creates the bean
+2. Injection - This bean may require other dependencies, so IOC container will inject required dependencies into this, obviously we have to write the code for it, by using @Autowired
+3. Initialization - When the bean is created successfully, it will run the method which has @PostConstruct annotation written on it, this method is not compulsory but we can write it if we want to perform some custom work immediately after the bean creation
+4. Using the bean - The bean is used in the application according to business requirements
+5. Destruction - When the application shuts down, the bean is destroyed, If we want to run some custom code before destruction we can create a simple method and annotate it with @PreDestroy
+
+Dependency Injection?
+Whenever we have a class which is dependent on another class (Student is dependent on Address because one of its field is address), so in this case we have to inject Address into student. This process is called as dependency injection. We can use constructor, setter and field dependency.
+
+Types of Dependency Injection?
+Constructor - In this we create a constructor and this constructor will initialize all the required fields at the creation of object
+Setter - In this approach, we can create a object first, and then we can resolve the dependencies using setter
+Field - In this approach we just have to declare our variable in the java class field and annotate it with @Autowired annotation, spring boot will check IOC container and wire the required bean
+
+Circular Dependency?
+Suppose we have a scenario in which there are two classes, Class CAR and Class ENGINE which is as follows:
+Class CAR:
+	Engine engine
+
+Class ENGINE:
+	Car car
+
+Now see carefully, if we are using constructor injection, so when we try to create object of Car we have to provide engine object at the time of creation -- but if we create engine object, we should first provide Car object
+
+So we are in a deadlock situation now, such situation is called as circular dependency problem.
+
+How to solve Circular Dependency problem?
+Actually if circular dependency is happening in our project, we should not use some trick and solve it, we should discuss it with manager or team lead and redesign our application such that such thing should not happen, because it is a bad practice to have circular dependency in our project.
+
+But let's say we want to solve it with some trick, then we can use setter injection, because it does not demand all objects to be given at the time of initialization, so we can temporarily handle it
+
+Which one is best injection and why?
+Constructor injection is the best one because we have to supply all dependencies forcefully at the creation of object so it is not possible that our application may fail afterwards because of "dependencies not resolved" issue.
+
+@Autowired?
+It is an annotation for dependency injection, we can write autowired on top of constructor, on top of setter, or on top of field, to do dependency injection automatically.
+
+Database connection properties?
+spring.datasource.url -> location of database in computer, url, port number, db name
+spring.datasource.driver-class-name -> db class name of provider (mysql, oraclesql, mariadb etc)
+spring.datasource.username -> username
+spring.datasource.password -> password
+
+Entity?
+An entity is simply a java file which represents the structure of the table in database. We annotate it with @Entity annotation, Also if we want to give custom table name, we can use @Table(name="_"), if we don't use @Table annotation, then it will create a table with same name as entity name in java class file using snake class (class UserDetails -> user_details)
+
+Dto?
+Dto stands for data transfer object, it is just a data structure that we create to hold data and pass to different classes, or suppose frontend is sending in some structure, we will create a structure to match that, so it is called dto
+
+Controller?
+A controller is a java file which takes all the requests from frontend and route it to appropriate service file to get the proper response what frontend is expecting. To make a java file as controller we use @Controller annotation.
+
+There are two variations in controller - @Controller and @RestController
+
+@Controller - this file is used in MVC project where all methods return type will be string. This string represents the name of the html file that we are going to return from backend. That html file will be stored in "static" folder in our application.
+
+@RestController - this file is used when our backend application is making REST APIs, in this we get request from frontend for data, and we send them the response in some specified structure along with status codes.
+
+Service?
+A service file is a java file which handles all the business logic, this file communicates with the controller file as well as the repository file, it sits in the middle of controller and repository.
+
+In spring boot, we annotate a java file with @Service annotation to make spring know it is a service file
+
+Repository?
+A repository is a java file which is responsible for communication between our spring boot app and database provider that we are using. In the repository file we write the queries or method which perform query on the database and get the result from db to java level.
+
+In spring boot, we write @Repository annotation on top of a file to make it a repository file
+
+CAUTION: public interface UserRepository "EXTENDS JPA REPOSITORY<class name representing table, primary key data type>"
+
+REST API
+REST stands for Representational state transfer. It is a way by which applications can communicate with each other, for example - frontend and backend communicating with each other. Let's say we made some methods in a java file and frontend wants to execute that method, so we give them an API, and they can call that method by hitting the API essentially getting the desired response.
+
+Some annotations which we used while creating REST APIs
+@GetMapping - to fetch data from backend (maybe backend will fetch from database)
+@PostMapping - to insert some data into the database
+@PutMapping - to modify some existing row in database
+@PatchMapping - to modify only some cells in a row in database
+@DeleteMapping - to delete some data in the database
+
+Idempotency?
+It means making an API request multiple times has the exact same effect as hitting it only once. POST is not idempotent, as it will create new objects in each hit, but rest all others are idempotent (GET, PUT, DELETE)
+
+Response Entity?
+It is a class provided by spring boot to return a standard response to frontend from an API. Generally people can pass anything back to frontend which is not standard, but if everyone will pass a same standard structure then it's nice, that structure is ResponseEntity.
+
+It gives options to pass status code, body in response.
+
+return new ResponseEntity<>(body to be sent, status that you want to send);
+
+Status Code?
+200 ok : request was successful, backend sent the requested data
+201 created : POST call was successful, data is created in backend
+400 bad request : Request body that came from frontend is wrong or mismatch from backend
+401 unauthorized : Invalid id password / credentials
+403 forbidden : user is valid and inside the system but he is trying to hit some API which is not allowed to him
+404 not found : frontend is hitting some API which is not there in backend, so it basically asking a resource which does not exist in database
+500 internal server error : this is a generic exception we throw we something got failed like some runtime exception happened
+501 service unavailable : maybe maintainence is going on so we are not accepting any api requests
+502 bad gateway : when we are using microservices, suppose some unit gave corrupted response or maybe it is not giving response because of overload, so that time we get this error, it can also happen if our backend is communicating with another backend like AWS etc and they are not in proper condition so they return us "bad gateway"
+504 gateway timout : when we are using microservices, suppose some unit is not giving response for a long time maybe because of executing some big SQL etc, so that time we get this error, it can also happen if our backend is communicating with another backend like AWS etc and they are not giving answer in required time so we get "bad gateway"
+
+What is Gateway?
+Suppose we are using microservices, so we will have small units doing some work, some unit will handle authentication, other will handle some other user registration etc, but frontend should not see these many services.
+
+For frontend, it should look like "BACKEND", so we have a single entry point which is called a GATEWAY, gateway will route the request to proper microservice unit response for solving that request.
+
+Also it take cares that work is equally distributed so that one machine should not get overloaded (this is called rate limiting / load balancing)
+
+Maven?
+Maven is a project management tool. In old days we used to go to mvn repository website, download .JAR file for dependencies that we require and keep that in our project and then see whether it is running or still giving some error.
+
+Suppose we finished coding our application, now we want our application .JAR file to be deployed. How to make that JAR file? again we have to visit internet and follow certain steps to do.
+
+Now because of maven, we just have a file called pom.xml and we have to write which dependencies we need, MAVEN will go to mvn repository and download all dependencies .JAR file and properly keep at the required place.
+
+when we finished coding our application, we can just right click on project and do, MAVEN CLEAN -> MAVEN INSTALL, that's it, we have our .JAR file in target folder, which we can share with deployment team for deploying.
+
+Bean Scope?
+It is a kind of rule that we someone requests for a bean, what steps we should take-
+
+Singleton - According to this approach, no matter how many times beans is called it will point to the same bean that is created at first moment.
+
+Prototype - According to this approach, every time when someone will try to create a bean in some java file, IOC container will assign a fresh new bean to it.
+
+Request - In this approach, for every API request a bean is created what the API needs, and when API call is ended, that bean is destroyed.
+
+CAUTION - I have only used singleton in our project in past company, other two I have only read for theoretical knowledge purpose.
+
+Global Exception Handler?
+Instead of writing try-catch block everywhere across the application, we can create a java file and annotate it with @ControllerAdvice / @RestControllerAdvice. Now, in our entire application, whenever some error will happen, controller will come to this file.
+
+Inside this java files, there will be certain methods and all these methods with be annotated by @ExceptionHandler(Exception class that it will handle)
+
+@ExceptionHandler(ArithmeticException.class)
+@ExceptionHandler(Exception.class) --- If no one caught, then this method will catch
+
+In these methods, return type will be ResponseEntity, as it will directly return the result to frontend.
+
+Spring Profile?
+It is feature provided by spring boot to separate java files, properties files according to various environments. In general suppose I am working in some project, so they will use MariaDB for local, and mySQL for production environment, so we can create two property file, one for dev environment and one for prod environment
+
+application.properties -> In this base file we will write "spring.profiles.active=prod"
+application-dev.properties
+application-prod.properties
+
+so it will fetch the respective file. Also on top of any java file we can write @Profile("prod"), so it will only be considered if we are in prod environment, otherwise once the application is running, it will be ignored completely.
+
+Can a file fall under two profiles?
+Yes by using this syntax -- @Profile({"dev", "test"})
+
+Projection?
+In SQL, suppose we don't want all columns, we only want some columns so we write select __,__, __ from table name
+
+but let's say in our repository layer, we write such a query, but when only those limited columns will come how do we catch that and hold? Obviously we can create a DTO, but there's a better way, which is projection, Projection is similar to a DTO, we create a "interface" and make getters.
+
+public interface UserSummary {
+    String getName();
+    String getEmail();
+    // Only these two fields will be pulled from the database
+}
+
+CAUTION: naming convention should be used carefully, camel case and get______ should match with Entity class field name
+
+Why use Projection when we can use DTO?
+If you use DTO in repository layer, even thought you fire a query with select id,name. But still it will do select * in database and after getting all results, it will filter and put in dto the required fields which is not efficient.
+
+If we use projection, then while firing query itself, it will only fetch those columns which we are mentioning which is efficient in nature
+
+Pagination?
+It is a process where in - suppose the required requests get 100K results from database. Now if we send this much data to frontend, will it reach frontend? will it be stopped by gateway? suppose it reaches the frontend, will frontend be able to store and handle this much data? NO
+
+so we should use pagination, it simply means, instead of sending 100K data, we can send the data in small sizes, like 20 records every request. How many records per request? that can be decided by discussion between frontend and backend team.
+
+How frontend understands how many more pages data is there?
+In each response of pagination, we pass additional data to frontend, like "how many pages in total" etc, by that calculation, frontend asks data according to page number.
+
+Syntax:
+Pageable pageable = PageRequest.of(page number, size);
+
+Sorting?
+It is majorly used in combination with pagination, suppose we want to send the result in sorted manner then we can use this feature.
+
+Pageable pageable = PageRequest.of(page, size, Sort.by(field name).descending());
+
+Persistence Context (L1 Cache / Level One Cache)?
+
+FETCH PROCESS:
+Whenever we query something from the database, it will first check whether this data is there in L1, if it is there then it will return from here itself. Otherwise it will go to real database and fetch the results.
+
+One important thing, L1 cache is only maintained for the current executing method, once the method is over, it is destroyed.
+
+MODIFY PROCESS:
+Suppose in a method you are doing some changes in database, so actually that changes are not done in DB, it is only done in L1 cache, once the method is completed, then L1 cache will put all changes together in the database.
+
+Suppose in between some rollback happened, so L1 cache will rollback. No changes in DB.
+
+Command Line Runner?
+CommandLineRunner is a simple Spring Boot interface used to run a specific block of code immediately after the application starts up fully.
+
+"implements CommandLineRunner"
+then we get a method,
+"public void run(String... args) throws Exception"
+
+Hibernate Mappings?
+Hibernate Mappings define the relationships between different tables in your database using Java objects.
+
+@OneToOne : One record in Table A belongs to exactly one record in Table B.
+@ManyToOne : Multiple records in Table A can point to a single record in Table B.
+@OneToMany : One record in Table A is linked to multiple records in Table B.
+@ManyToMany : Multiple records in Table A can relate to multiple records in Table B.
+
+Some important points:
+@ManyToOne and @OneToMany are exactly same, it just depends from which table you will establish the relationship.
+
+@OneToOne only requries a column (foreign key) that points to primary key of another table
+@ManyToOne/@OneToMany also just requires a column to establish relationship
+@ManyToMany requires a new table to show the relationship
+
+CAUTION : some people create new table in @ManyToOne also, but it is not required, it can be managed by just adding a extra column.
+
+Fetch Types?
+Suppose we are using a class which has nested structure, like for example
+
+class Department:
+	List<Employee> list
+	
+so the question is when we are fetching a department, should it fetch all employees details also right now?
+
+If that is the business requirement then we should annotate the List<Employee> with @OneToMany(fetch = FetchType.LAZY/EAGER), depends on requirement.
+
+Obviously if we keep it EAGER, then it has a disadvantage that we will fetch alot of data at a time. Because of this LAZY is recommended.
+
+Cascade Type?
+It tells hibernate to pass down entity operations (delete, save) to child entity when applied on parent entities, Suppose someone deleted one department, so should we delete all employees in that? This decision is given by cascade types.
+
+Again it depends on business requirements, we should discuss with our team. The syntax looks as follows:
+@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+
+With this we can also wee that both fetch and cascade are used together according to requirement.
+
+Dervied Query?
+It is a feature in spring boot jpa where we can skip writing SQL and JPQL, means we can achieve the results without writing any kind of query. We should go to the repository layer and write the method names following a specific rule which we can refer from spring docs.
+
+Example:
+findByFirstNameAndLastName(String first, String last)
+
+We can find this fix syntax by visiting spring docs
+
+JPQL?
+It stands for Java Persistence Query Language. Instead of changing SQL code again and again in repository file, we can write a kind of SQL which is independent from SQL provider. Such SQL is called JPQL.
+
+Remember one important point - JPQL does not use any table name or column name from database. It only uses Java class names (instead of table name) and field names (instead of column names)
+
+"SELECT e FROM Employee e WHERE e.department = :deptName"
+
+here, Employee is class name which maps to table TBL_EMPLOYEE, but as we can see in JPQL we use class name, not table name
+
+Native Query?
+It is used to write the exact raw query that we write in our database.
+
+Why we should use native query?
+Suppose you are using mysql, and there is some feature which only exists in mysql, then to use that we have to use native query
+
+@Transactional?
+This annotation is kept on that method for which we want ACID properties to be followed. If there are 10 instructions in this method and somewhere on 7th instruction the method gets an error so it will do rollback from there. Thus, we follow the principle of "all or nothing" which keeps the database consistent.
+
+Transaction Rollback
+Spring only roll backs for unchecked exceptions (runtime exceptions) like NullPointerException, ArithmeticException
+
+How to rollback if the exception is checked exception?
+@Transactional(rollbackFor = write Checked Exception class name.class)
+
+How to rollback all checked and unchecked exception?
+@Transactional(rollbackFor = Exception.class)

@@ -284,3 +284,77 @@ How to rollback if the exception is checked exception?
 
 How to rollback all checked and unchecked exception?
 @Transactional(rollbackFor = Exception.class)
+
+@Modifying?
+This annotation is used in repository layer along with @Query annotation whenever we execute a query which will modify the state of the database. (update, insert, delete)
+
+If you try to run a UPDATE/DELETE query without @Modifying annotation you will get "InvalidDataAccessApiUsageException"
+
+Actuators?
+It is feature which helps us to monitor and manage our application when it is running live in production environment. It gives us some API endpoints which we can use directly.
+
+/actuator/health - Shows if the application is up and running
+/actuator/metrics - Displays detailed OS and JVM metrics, such as memory usage, CPU load etc
+and more are there which we can get by referring to spring documentation.
+
+Logging?
+It is used for recording events that happen during execution of our program. In general we have used System.out.println, but it is not a proper way for enterprise level application. If we use a logging framework, we let it in a nice fashion with exact time of event, along with exact file name in which the event is happening.
+
+Spring Boot has bydefault support for logging. In that, it uses "Logback" as implementation, while it's interface or documentation is called SLF4J
+
+There are various logging levels which denote the criticality of the log statement. They are divided into ERROR, WARN, INFO, DEBUG, TRACE
+
+IMP: default logging mode is "INFO"
+
+This sequence is the hierarchy - ERROR, WARN, INFO, DEBUG, TRACE - If you enable "INFO" then all things to the left of INFO will also get activated (ERROR, WARN, INFO)
+
+Spring Security?
+It is a framework in spring boot which provides security for our application. It handles authentication and authorization for java applications.
+
+What is Authentication?
+It is the process of identifying who are you?
+
+What is Authorization?
+It is the process of checking whether the resource you want to access can be given to you. Means, it check about rights and privileges according to your role.
+
+What is filter chain?
+Spring security works on a rule that - Any request which comes to the backend will pass through a series of filters (some java files) and if any filter gave some error then this request is either unauthenticated or unauthorized according to the situation.
+
+What are by default filters and explain some famous filters?
+It uses a class called "SecurityFilterChain" which faces the incoming requests. After this filter there are by default 11 to 16 filters if we don't do any configurations. The setup of filter chain is totally dependent on us according to our business requirement.
+
+Suppose our application uses USERNAME-PASSWORD authentication, then we have to write/modify the UsernamePasswordAuthenticationFilter.
+
+Suppose we want to do JWT token in our application then we have to implement OncePerRequestFilter, and inside this method we have to check and verify the JWT token.
+
+However, developing a security configuration is done only one time in a project and it requires research from internet so that we should develop it properly such that security breaches are not there.
+
+What is Authentication Object?
+It is a inbuild class that acts as a data container representing the user's identity request or current login status.
+
+What is AuthenticationManager Class?
+It is responsible for verifying the credentials of the user. But this class does not do anything by itself. Instead, it delegates the work to another class which is AuthenticationProvider.
+
+What is AuthenticationProvider Class?
+It is the main class which does the authentication. This class will establish relationship with the repository layer and take the credentials from database and then check with what is given by user.
+
+What is Security Context?
+It is a container which holds the authentication object which has all the information of the logged in user such as username, password, role of user etc
+
+Should we store password as plain text?
+No, we should hash the password using one-way hashing (once hashed, we cannot get original string back) and store in DB. When user enters the new username and password, this password is again hashed and checked with the hashed password in DB which means checking "hashed incoming password" and "hashed db password"
+
+Do you know some hashing software / class / feature / Password Encoder?
+BCrypt is the most famous hashing software or library that people use to do hashing. It already has inbuild methods by which we can encrypt the text into complex text.
+
+JWT Token?
+It is a long string which consists of three parts - Header.Payload.Signature
+
+Header has two things (Type of token = JWT, Algorithm we will use = HS256)
+
+Payload contains the body of key-value pairs which we want to store (Also called as CLAIMS)
+
+Signature - Using the algorithm (mentioned in header) + SECRET KEY, we will encrypt this part
+
+Remember one important part,
+Anyone can read the JWT token on the internet, so never store sensitive data like password etc into it, The essence of JWT is anyone can read it, but if anyone changes it, then server can identify that it was changed so it will not accept that.

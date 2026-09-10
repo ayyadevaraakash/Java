@@ -1,0 +1,122 @@
+Data Types?
+If we want to store some data in a computer, we have to inform the computer about what type of data we are giving, for example whether it is a number, sentence, etc. So, in a programming language these following types are there which convey what data is going to come
+
+PRIMITIVE: (which are fundamental and stored in stack as direct raw values)
+for storing numbers:
+int - 4 bytes
+long - 8 bytes
+float - 4 bytes
+double - 8 bytes
+
+for storing character:
+char - 2 bytes
+
+for storing yes/no kind of data:
+boolean - size varies, but it only holds true or false
+
+NON PRIMITIVE: (which are made from primitive data types and stored as objects in heap)
+
+for storing sentences or words:
+String - It is a object of class String
+Arrays - for storing data of same data type
+
+Variables?
+It is a container where in we can store data
+
+Operators?
+It is inbuilt symbols provided by java to do some mathematical operations
++ -> addition
+- -> subtraction
+and so on
+
+Conditional Statements?
+If there is some condition, so we evaluate according to conditions by using IF ELSE block
+
+Loops?
+If there is some repetitive task, so instead of writing the same code again and again, we can use loops to automate that, there are three types of loops, for loop - while loop - do while loop
+
+1D Array?
+It is a contiguous block of storage which holds the data of same data type
+
+2D Array?
+It creates a matrix of data of same data type
+
+Class and Objects?
+A class is a blueprint for creation of an object. Suppose we have a problem related to employee, so we have to create a employee in the system first. An employee might have name, age etc, how to store this data? we need a structure which can hold name, age etc in one container, In such moment, we can create a class employee and it can hold all data once its object is created. Additionally it also supports methods by which we can run a block of code.
+
+Object is an instance of a class. Instance means -- looking at the class blueprint, a structure is created in memory which can hold the data and support the methods which was listed in the class.
+
+Constructor?
+When a object is created, a method is called automatically which does not do anything and actually is not visible as well, such method is called as construtor. But why such method exists? Actually we can write that method by ourselves and as a result whenever a object is created, our code will run immediately at the creation.
+
+Constructor method name = Class name
+
+class Employee:
+	Employee() {
+		// code
+	}
+	
+Type of constructors?
+
+1. Default constructor - If we don't write any constructor, then also a constructor is created at run time and called which does not do anything, such constructor is called default constructor.
+
+2. No-arg constructor - Suppose we created a constructor by ourselves, but we are not taking any parameters and writing some code in the constructor.
+
+3. Parameterized Constructor - In this case, we create a constructor and take several parameters and write some code.
+
+This Keyword?
+It is used to refer to the current object. We know that suppose we have a class
+
+class Employee:
+	id
+	name
+	
+Employee e1 (1, 'Akash')
+Employee e2 (2, 'Vijay')
+
+Now, see the below code
+
+class Employee:
+	id
+	name
+	
+	void run():
+		print(this.id)
+
+when we call e1.run()
+
+call goes to run() method, and e1 means "this", essentially it will
+this.id ==> e1.id
+
+similary when e2 will call same will happen, "this" will get converted to e2
+
+Static Keyword?
+If we use static keyword on any field or method, it will become the property of class, it does not belong to any specific object.
+
+class Employee:
+	id
+	name
+	
+	static void run():
+		print("Hello")
+		
+now, we can see the that run() method is static, so it is not the property of any object
+
+how to call it?
+Employee.run()
+
+so we have call it directly by using class name
+
+Now, let's say if this is the scenario,
+
+class Employee:
+	id
+	name
+	
+	static void run():
+		print("Hello " + this.id)
+		
+see the above example and think, if run() belongs to class, then what will happen for "this.id"
+
+obviously it will give an error for this,
+"non-static variable this cannot be referenced from a static context"

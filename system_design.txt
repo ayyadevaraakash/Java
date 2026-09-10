@@ -1,0 +1,62 @@
+Monolithic Architecture?
+A monolith is built as one large system. It is often the default choice for early-stage applications.
+
+Advantages -
+1. Easier to develop, test
+2. Things like logging etc needs to be setup only once
+3. Components or code can speak with each other quickly, no network latency
+
+Disadvantages -
+1. As the app grows, the codebase can become a tangled
+2. A bug or memory leak in one minor feature can crash the entire application.
+3. A minor text change requires rebuilding and redeploying the entire giant system.
+
+Microservices Architecture?
+Microservices break the application down into domain-specific services.
+
+Advantages -
+1. You can scale only the resource-heavy parts of your app, saving infrastructure costs.
+2. If a specific service crashes, users can still log in, use other services.
+3. Small engineering teams can own specific services from end to end without stepping on each other's code.
+
+Disadvantages -
+1. Managing deployments requires DevOps team or specialists.
+2. Services speak with each other through network which causes network latency.
+3. Since databases are split, we have to update data in fast manner in all databases to ensure consistency.
+
+Horizontal vs. Vertical Scaling?
+Horizontal scaling means adding more machines into your pool of resources (scaling out), while vertical scaling means adding more power (CPU, RAM) to an existing machine (scaling up).
+
+Load Balancing?
+Distributing network or application traffic across multiple servers to ensure high availability and reliability.
+
+Caching?
+Storing copies of data in high-speed storage layers (like Redis) to serve future requests faster.
+
+Content Delivery Networks (CDNs)?
+A geographically distributed network of servers that caches content closer to end-users to reduce latency.
+
+Redundancy?
+Redundancy is the duplication of any system component (hardware, network, or data) to eliminate a single point of failure
+
+Replication?
+Replication is a specific process used to copy and sync data continuously across those redundant components.
+
+Consistency?
+In a consistent system, if you update data on one server, that update must instantly apply to all other servers in the cluster before anyone else can read it. It ensures that no matter which database node a user connects to, everyone sees the exact same data at the exact same millisecond.
+
+Availability?
+In an available system, the database is operational 100% of the time. If a user asks for data, the system must give an answer, even if that answer is slightly outdated (stale) because one of the internal database nodes is lagging behind or running slowly.
+
+Partition Tolerance?
+A "network partition" happens when the communication line between two or more of your servers breaks (e.g., a network cable is cut, a router fails, or a data center goes offline), splitting your single system into isolated islands that cannot talk to each other. A system is partition-tolerant if it doesn't completely crash when this happens.
+
+CAP Theorem?
+The rule stating that a distributed system can only guarantee two out of three features at the same time: Consistency, Availability, and Partition Tolerance.
+
+What is a Load Balancer? Why we need it
+Load balancer is used to distribute the traffic to our backend
+
+1. Without a Load Balancer: All users hit a single server. That server runs out of memory or CPU power, and the website crashes.
+
+2. With a Load Balancer: You set up five identical servers. The load balancer receives all the traffic and smoothly routes User 1 to Server A, User 2 to Server B, and so on. If Server A crashes, the load balancer stops sending traffic there and redirects everyone to the healthy remaining servers.

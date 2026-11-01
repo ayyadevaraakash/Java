@@ -93,3 +93,126 @@ Survivor space = s0 + s1
 
 Important - Whenever GC is run in young generation, it is called as Minor GC and whenever it is running in new generation it is called Major GC
 
+Metaspace (Perm Gen / Method Area)
+- It stores static variables (also called class variables)
+- It stores class metadata
+- Use native memory, does not use Java Heap Memory
+
+Old Generation is also called "Tenured Generation"
+
+-- When Metaspace was known by the name "Perm Gen", it was part of heap memory, so it was not expandable, but now after becoming Metaspace, it is a separate entity outside of heap which uses native memory so it is expandable as per requirements
+
+Types of GC:
+1. Serial GC
+- It uses a single thread to perform GC, when this happens, all application threads are paused, once GC is done, application resumes. This is also called Stop-The-World (STW)
+
+2. Parallel GC
+- It is same as Serial GC, but it uses multiple threads so work is completed faster and STW time is reduced
+
+3. Concurrent Mark-Sweep GC
+- It tries level best to work concurrently with the application threads, so it minimizes the STW time and in best case, it will not cause STW. Here defragmentation does not happen, so free space can be in fragments
+
+4. G1 (garbage first) GC
+- It is similar to concurrent mark sweep gc, but it defragments the free space as well. Also, it has some concurrent improvements, so it is the default GC algorithm since java 9.
+
+Till Java 8 (inclusive) - Parallel
+From Java 9 onwards - G1
+
+How float is stored in Java?
+It uses 32 bit IEEE 754 standard
+
+sign bit - 1 bit
+exponent - 8 bit
+mantissa/significant - 23 bit
+
+Convert float number to machine representation-
+step 1 - convert the number to binary number
+step 2 - convert to 1.___  x  2^(u)
+step 3 - add bias to exponent (float bias is 127)
+step 4 - write binary in form of sign bit, exponent and mantissa
+
+remember that, 1.____, here ____ is called mantissa
+
+To convert back in reverse fashion-
+[(-1)^(sign bit)] x [(1 + mantissa)] x [2 ^ (exponent - 127)]
+
+Types of Classes:
+1. Concrete Class
+- object can be created using NEW keyword
+- all methods have implementation
+- access modifier can only be public or "nothing written" (which means package private)
+
+2. Nested Class
+
+Any class which is inside another class is called as nested class. If we know that there is a class B which is only required by another class A, then why to create two separate files, we can just create nested class.
+
+Nested Classes can be of two types:
+- Static Nested Class
+- Non Static Nested Class (Local Inner Class, Member Inner Class, Anonymous Inner Class)
+
+Static Nested Class
+- It does not have access to non-static variable and non-static methods of outer class
+- It can be created without creating object of outer class
+- It can have access modifier like public, private, protected and __ (default)
+
+Static Nested Class + Static Method = Outer.Inner.run();
+Static Nested Class + Method = Outer.Inner obj = new Outer.Inner(); obj.run();
+Static Nested Class supports inheritance inside the own outer class as well as outside
+
+Non Static Nested Class
+1. Member Inner Class
+- If you create a simple inner class inside a outer class, it's a member inner class
+- It can have access modifiers
+- You have to create object of outer class to user the inner class
+
+Scene 1 -> class Inner inside class Outer
+Outer obj = new Outer();
+Outer.Inner obj2 = obj.new Inner();
+obj2.run();
+
+Scene 2 -> class Inner2 extends Inner, everyone inside class Outer
+Outer obj = new Outer();
+Outer.Inner2 obj2 = obj.new Inner2();
+System.out.println(obj2.w);
+
+Scene 3 -> class Outer2 wants to become child of Inner of Outer
+Possible but has to invoke Inner constructor explicity on first line
+class Outer2 extends Outer.Inner {
+    Outer2() {
+        new Outer().super();
+    }
+}
+
+2. Local Inner Class
+- If you create a inner class in a block scope, like IF-ELSE, FOR-LOOP etc, then it is called a local inner class
+- It is invisible outside its block
+
+3. Anonymous Inner Class
+- Suppose you have a abstract class with a abstract method
+- You can create the object of this abstract class, but you have to give the implementation at the same time
+
+MyAbstractClass obj = new MyAbstractClass() {
+	// method definitions
+};
+
+Generics:
+- <T> can be anything other than primitive data type
+- If child class has a parent class which is generic, then when declaring the child class you have to mention the type of parent, example - class Child extends Parent<String>
+- If child class is also generic, then parent and child can only share same unknown <T>, <T>
+
+Generic Method:
+You can make a method generic without making it's class generic
+public <T> void run(T x) {}
+
+Upper Bound for Generic:
+<T extends Number> - it means that T can be anything which is child of Number class
+
+Multi Bound for Generic:
+<T extends ConcreteClass & Interface 1 & Interface 2 .... >
+- only one concrete class is allowed and any number of interfaces are allowed
+- it works like extends ConcreteClass implements Interface 1, Interface 2...
+
+Wildcard:
+Upper Bound - List<? extends Number> - will take number and it's children
+Lower Bound - List<? super Integer> - will take Integer and all it's super classes
+Unbounded - List<?> - completely unknown

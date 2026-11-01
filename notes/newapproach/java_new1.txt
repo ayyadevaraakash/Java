@@ -1,0 +1,95 @@
+java program is platform independent because java code is converted into byte code, now any machine/OS which is having JVM (platform dependent) can convert the bytecode into machine code which the corressponding machine can run.
+
+JVM has JIT (just in time) compiler which converts the bytecode into machine code
+
+JVM, JRE, JDK - platform dependent
+bytecode - platform independent
+
+JSE - Java Standard Edition
+JEE - Java Enterprise Edition
+JME - Java Micro/Mobile Edition
+
+JSE is normal core java
+JEE = JSE + some other apis like transactional + servlets + jsp + rollback etc
+JME has apis related to mobile app development
+
+In a java file, only one "public class" is allowed and that public class name should be equal to file name
+
+Class level variables and Static Variables -> If not initialized, default values are given
+Local variables have to be initialized by us
+
+float and double are very dangerous because they can give precision error in calculation, so always prefer "BigInteger" for floating point operations in your project if your project heavily depends on floating numbers
+
+String constant pool is there in heap memory
+Array is stored in heap memory
+
+Access Modifier:
+public - accessible everywhere
+private - no one can access
+default - accessible to everyone in my package
+protected - accessible to everyone in my package + accessible to my children from other packages
+
+"static methods cannot access non-static variables and methods"
+
+Which methods should be made static?
+- Methods which have no relation to objects, and will not modify any object specific data
+- Methods which only compute something based on the arguments received (not dependent on instance variables)
+
+Variable Arguments in Methods
+- int add(int ...data) {}
+- In a method signature, only one variable argument is allowed
+- variable argument should be kept at last in arguments, e.g (int a, int b, int ...data)
+- int ...data is actually int[] data, String ...data is actually String[] data
+
+Constructor
+If you create a method with "same name as class name" + no return type = constructor, else it is a normal method
+- It cannot be final because anyways you cannot override it in child class
+- It cannot be abstract because we know constructor cannot be inherited, so how someone else will provide the implementation
+- It cannot be static, because if we make it static then it cannot access and initialize non-static variables, which is the whole reason why constructor exists.
+- Interfaces cannot have constructors because we cannot create objects for interfaces.
+- Overloading of constructor is possible
+
+Chaining of Constructor
+1. If there are multiple constructors, 1) Student() {}, 2) Student(int a) {}, 3) Student(int a, int b) {}, I can call this(12,13) in second constructor to call the third constructor like a method.
+2. Child class constructor always call parent class constructor on the first line, there is a invisible line written, which is "super()", but if you want to send some parameters, you have to write by yourself, super(age).
+
+Memory Management
+RAM = stack + heap + metaspace(early name-permgen (permanent generation))
+
+Stack:
+- stores temporary variables in a method
+- separate block for each method
+- store primitive data type
+- store references of the heap objects
+- each thread has its own stack
+- when stack is full it will give java.lang.StackOverflowError
+
+Garbage Collection:
+- free up the memory if no one is pointing to the object stored in the heap, garbage collector runs periodically according to JVM, we cannot run GC by ourselves but we can make a appeal by calling System.gc()
+- If we have a weak reference to an object, then even though there is a reference, still GC will clean it in the next cycle and we get a NULL
+- If we have a soft reference to an object, then GC will forcefully clean it IFF there is a severe memory shortage in the system
+
+Weak Reference Syntax:
+import java.lang.ref.WeakReference;
+WeakReference<Employee> weakRef = new WeakReference<>(new Student());
+
+Soft Reference Syntax:
+import java.lang.ref.SoftReference;
+SoftReference<Employee> softRef = new SoftReference<>(new Student());
+
+Heap:
+- String Pool is there inside this
+- There is no order of allocation inside heap
+- GC is used to delete the unreferenced objects in the heap
+
+Heap = Young Generation + Old Generation
+Young Generation = Eden + Survivor space
+Survivor space = s0 + s1
+
+- Whenever an object is created it is first stored in young generation, now it might happen some are unreferenced and some are referenced
+- After a certain time GC will run, it will see whoever is unreferenced, it will delete those, now whoever is referenced will be moved to either s0 or s1 (Mark and Sweeep Algorithm)
+- Next time again some new objects might be created and stored in young generation, again when GC will happen, same process will be followed, along with that whoever is stored in s0 will be moved to s1 and vice versa (alternate every time)
+- Now when objects are moving between s0 and s1, it's age increase every time, once it reaches a threshold it is "promoted" means, it is moved to old generation area
+
+Important - Whenever GC is run in young generation, it is called as Minor GC and whenever it is running in new generation it is called Major GC
+

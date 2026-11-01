@@ -23,7 +23,10 @@ float and double are very dangerous because they can give precision error in cal
 String constant pool is there in heap memory
 Array is stored in heap memory
 
-Access Modifier:
++----------------------------+
+|      Access Modifier       |
++----------------------------+
+
 public - accessible everywhere
 private - no one can access
 default - accessible to everyone in my package
@@ -41,7 +44,10 @@ Variable Arguments in Methods
 - variable argument should be kept at last in arguments, e.g (int a, int b, int ...data)
 - int ...data is actually int[] data, String ...data is actually String[] data
 
-Constructor
++------------------------+
+|      Constructor       |
++------------------------+
+
 If you create a method with "same name as class name" + no return type = constructor, else it is a normal method
 - It cannot be final because anyways you cannot override it in child class
 - It cannot be abstract because we know constructor cannot be inherited, so how someone else will provide the implementation
@@ -53,7 +59,10 @@ Chaining of Constructor
 1. If there are multiple constructors, 1) Student() {}, 2) Student(int a) {}, 3) Student(int a, int b) {}, I can call this(12,13) in second constructor to call the third constructor like a method.
 2. Child class constructor always call parent class constructor on the first line, there is a invisible line written, which is "super()", but if you want to send some parameters, you have to write by yourself, super(age).
 
-Memory Management
++----------------------------+
+|      Memory Management     |
++----------------------------+
+
 RAM = stack + heap + metaspace(early name-permgen (permanent generation))
 
 Stack:
@@ -102,7 +111,10 @@ Old Generation is also called "Tenured Generation"
 
 -- When Metaspace was known by the name "Perm Gen", it was part of heap memory, so it was not expandable, but now after becoming Metaspace, it is a separate entity outside of heap which uses native memory so it is expandable as per requirements
 
-Types of GC:
++------------------------+
+|      Types of GC       |
++------------------------+
+
 1. Serial GC
 - It uses a single thread to perform GC, when this happens, all application threads are paused, once GC is done, application resumes. This is also called Stop-The-World (STW)
 
@@ -136,7 +148,10 @@ remember that, 1.____, here ____ is called mantissa
 To convert back in reverse fashion-
 [(-1)^(sign bit)] x [(1 + mantissa)] x [2 ^ (exponent - 127)]
 
-Types of Classes:
++----------------------------+
+|      Types of Classes      |
++----------------------------+
+
 1. Concrete Class
 - object can be created using NEW keyword
 - all methods have implementation
@@ -195,7 +210,10 @@ MyAbstractClass obj = new MyAbstractClass() {
 	// method definitions
 };
 
-Generics:
++----------------------+
+|      Generics        |
++----------------------+
+
 - <T> can be anything other than primitive data type
 - If child class has a parent class which is generic, then when declaring the child class you have to mention the type of parent, example - class Child extends Parent<String>
 - If child class is also generic, then parent and child can only share same unknown <T>, <T>
@@ -216,3 +234,28 @@ Wildcard:
 Upper Bound - List<? extends Number> - will take number and it's children
 Lower Bound - List<? super Integer> - will take Integer and all it's super classes
 Unbounded - List<?> - completely unknown
+
++----------------------+
+|      Enum Class      |
++----------------------+
+
+- It is a collection of constants which are all static and final by default
+- It cannot become child of any class, because its default parent is java.lang.Enum class
+- It can implement interfaces
+- It can have variables, methods
+- It can only have private constructor (It cannot be initiated)
+- It cannot become parent of any class
+- It can have abstract method, all constants have to implement that abstract method
+
+Commonly used methods of enum:
+values() -- used in loop to get enum one by one
+ordinal() -- to get index of enum
+valueOf() -- to get the enum by its value
+name() -- to get the name of the enum
+
+- If we create variables and methods in enum class, it is application for all enums, if we create two fields, then all enum values will have 2 fields
+- We can also create static method in a enum class, which outside people can access by enum class name
+- Any enum can override a existing method if it requires a different implementation
+
+Why to use enum instead of a class with static final fields?
+If we use a enum, in any associated method we will take in argument as enum class type, so anyone can send only valid values in parameters

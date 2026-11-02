@@ -191,7 +191,7 @@ Outer.Inner2 obj2 = obj.new Inner2();
 System.out.println(obj2.w);
 
 Scene 3 -> class Outer2 wants to become child of Inner of Outer
-Possible but has to invoke Inner constructor explicity on first line
+Possible but has to invoke Inner constructor explicitly on first line
 class Outer2 extends Outer.Inner {
     Outer2() {
         new Outer().super();
@@ -259,3 +259,116 @@ name() -- to get the name of the enum
 
 Why to use enum instead of a class with static final fields?
 If we use a enum, in any associated method we will take in argument as enum class type, so anyone can send only valid values in parameters
+
++------------------------------------+
+|      Singleton Design Pattern      |
++------------------------------------+
+
+We already know how to write normal singleton design pattern using eager initialization and lazy initialization.
+
+In two phase locking, there is a problem, there may be multiple cores, we know that each core is having its own cache, so generally whatever variable you might be using to hold the object will also exist in the respective cache, now what if someone asks for the object in other cache, then it will again show NULL which will result in creation of an object once more. So, whatever static variable we have created for holding the object should be declared as "volatile". Marking it as volatile means it will not rely on cache, all read/write operations will happen directly on memory level.
+
+Bill Pugh Solution of Singleton Design Pattern - There is another solution which is faster than two phase locking and also ensures thread safety.
+
+class Singleton {
+
+    private Singleton() {
+        System.out.println("Object created");
+    }
+
+    private static class SingletonHelper {
+        private static final Singleton INSTANCE = new Singleton();
+    }
+
+    public static Singleton getInstance() {
+        return SingletonHelper.INSTANCE;
+    }
+}
+
+In Java, inner classes are not loaded when outer classes are loaded at the start of the program, it is only loaded on demand when someone refers it. Also the initialization of a class in java is thread safe and the guarantee is given by JVM internal working itself.
+
+There is another way of achieving this using ENUM, enum initialization is also thread safe guaranteed by JVM, constructor is automatically private.
+
+enum Singleton {
+    INSTANCE;
+}
+
++----------------------+
+|   Immutable Class    |
++----------------------+
+
+- class should be final
+- class members should be private, no setters, only getters
+- class members only initialized by constructor once
+- while returning values from getter, you should only return a copy
+
+Note: final List<Integer> means it will point to same data structure, addition and removal of elements in that data structure is still allowed
+
++----------------------+
+|      Interfaces      |
++----------------------+
+
+- interfaces can have only public and __ (default) access modifiers
+- interfaces can extend other multiple interfaces
+- Interface x = new ConcreteClass();
+- If you don't define anything, methods are public by default
+- methods cannot be private in interfaces
+- fields are public, static, finally bydefault
+- concrete class implementing interface cannot make the access modifiers of any method narrower
+- If child of interface is abstract class, then there is no compulsion to provide implementation for all methods
+
++----------------------+
+|   Nested Interfaces  |
++----------------------+
+
+- interface inside another interface should be public
+- if our concrete class implements Outer, then we only have to give outer's method implementation
+- if our concrete class implements Inner, then we only have to give inner's method implementation
+- we have implement Outer, Inner to give implementation for all methods
+- we can create nested interface inside our class, any access modifier is allowed for that
+
++------------------------------+
+|   Abstraction vs. Interface  |
++------------------------------+
+
+A = It can have both abstract and non abstract methods
+I = It can only have abstract methods upto java 7 (from java 8 it has default, private and static method)
+
+A = It can extend from another class or multiple interfaces
+I = It can extend only from other interfaces
+
+A = variables can be static, non static, final, non final
+I = variable are by default public static final
+
+A = It can have constructor
+I = It cannot have constructor
+
++----------------------+
+|    Java 8 Features   |
++----------------------+
+
+- default methods can be written in interfaces
+(suppose there is some legacy code, now requirements comes that we have to add a method in interface, so all concrete classes have to implement that, but what if implementation is also same for all, so we can simply define it once in the interface itself. Remember that we have to use the word "default" explicitly)
+
+(actually java brought stream api in java 8, now the .stream() method itself was added in collections interface, if there was no default feature then .stream() also would have been implemented in 100's of classes)
+
+- if we have a default method in parent interface, and child interface makes it abstract again, then whatever was written in parent is null and void
+
+- child interface can use parent interface methods by writing "Parent.super.methodName()"
+
+- Java 9 allows private method in interfaces, what is use of private method in interfaces?
+If suppose there are 3 default methods and they share 80% of same code, then we can take that common part and write it in a private method and use that
+
+Remember: static methods can only access static variables and static methods but "normal methods can access both normal things as well as static things"
+
+@FunctionalInterface --> It should be added if you are sure that no other abstract methods should be added in future by some other developer
+
+In functional interface,
+- any number of static and default methods are allowed
+- any methods which have same signature as Object class are allowed because its definition is already given so it is not abstract in nature
+
+Inbuilt Functional Interfaces in Java (java.util.function)
+1. Consumer - void accept(T x);
+2. Supplier - T get();
+3. Function - R apply(T x);
+4. Predicate - boolean test(T x);

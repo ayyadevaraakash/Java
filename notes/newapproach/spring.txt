@@ -42,3 +42,9 @@ While taking request params from the frontend, if we want to do some preprocessi
 We know that a bean can be created by @Component or @Bean. @Component can create a bean if we have a default constructor, If we have a parameterized constructor then who will provide the values for constructor? So, our application will fail to start.
 
 In such scenario we can use @Bean annotation, we can keep a simple POJO, create a separate configuration class with @Configuration annotation and create a method with @Bean annotation which will return a object with parameterized constructor called.
+
+In a system beans are created in two ways with respect to timeline - Eager and Lazy
+
+Eager beans are created at the time of application start up while Lazy beans are created when they are needed in code.
+
+Singleton beans are created eager where as prototype beans are created lazy by default. If we want to make a singleton bean lazy, we can use @Lazy annotation.

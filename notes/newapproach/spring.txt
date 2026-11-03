@@ -1,0 +1,36 @@
++---------------+
+|     MAVEN     |
++---------------+
+
+- uses POM xml file, and gives build generation, documentation and dependency resolution
+
+Build Lifecycle:
+1. validate
+2. compile
+3. test (unit test)
+4. package (.jar)
+5. verify
+6. install to local repo
+7. deploy
+
+1. validate phase [mvn validate] - in general maven does not stop us from writing any style of code but suppose you want to enform some style then you can write xml code inside <build> tag, plugins are already available on internet, so you can use that to do the required stuff
+
+2. compile [mvn compile] - It compiles all java code and creates a target folder which holds all .class files
+
+3. test [mvn test] - It will run the test cases that you wrote inside test package
+
+4. package [mvn package] - It will create a .JAR file for the compiled classes
+
+5. verify [mvn verify] - bydefault there is no verify tasks, but we can add a plugin in <build> task which will do some verification task, example - there are some plugins which removed unused variables, empty catch block etc
+
+6. install [mvn install] - It will install the .JAR package into our local repository in .m2/repository folder
+
+If you want to change the location of installation in .m2 folder, you can change that in settings.xml which is present in .m2 folder
+
+7. deploy [mvn deploy] - It means to deploy .JAR file to remote repository, for company purpose, they will give xml snippet which you have to put in <project> which will deploy it to company repository.
+
++---------------+
+|    MAPPINGS   |
++---------------+
+
+While taking request params from the frontend, if we want to do some preprocessing on the parameters, we can do it using @InitBinder, it is basically added on top of a method which takes in the parameter (DataBinder binder) and has one line code to register the binder. In this only we will create a new object of the class which we will use for defining the rules

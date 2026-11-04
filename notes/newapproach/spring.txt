@@ -48,3 +48,22 @@ In a system beans are created in two ways with respect to timeline - Eager and L
 Eager beans are created at the time of application start up while Lazy beans are created when they are needed in code.
 
 Singleton beans are created eager where as prototype beans are created lazy by default. If we want to make a singleton bean lazy, we can use @Lazy annotation.
+
++------------------------------+
+|     DEPENDENCY INJECTION     |
++------------------------------+
+
+When a class needs the power of another class, we can give it via the IOC container, and this process is called dependency injection
+
+Now what are the ways of doing it?
+public class User:
+    Order order = new Order();
+
+This is the most easiest way to do it, but the problem is tightly coupled, suppose because of our project requirements we want to make Order as interface with some child classes, so now we have to change the User class as well due to the presence of "new Order()"
+
+Second problem is, according to "D" of solid principle, we should not depend on concrete class, instead we should always work with interfaces
+
+Field Injection Problems:
+1. We cannot make our field final, if we try to make it we will get a compile time error, Now what we can do is make it null at the beginning, even after that reflection can now reassign it which breaks the final keyword rule
+
+2. Suppose somewhere in some other file, someone did User obj = new User(); (no one is stopping us from doing this), and then they called obj.methodName(); and let's say this method is using order obj method, so it can throw NPE

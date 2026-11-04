@@ -67,3 +67,46 @@ Field Injection Problems:
 1. We cannot make our field final, if we try to make it we will get a compile time error, Now what we can do is make it null at the beginning, even after that reflection can now reassign it which breaks the final keyword rule
 
 2. Suppose somewhere in some other file, someone did User obj = new User(); (no one is stopping us from doing this), and then they called obj.methodName(); and let's say this method is using order obj method, so it can throw NPE
+
+Setter Injection Problems:
+- we cannot make the variable as final because spring can inject dependency using reflection by using setter
+
+Constructor Injection:
+Spring version 4.3 ---> If only one constructor is present, no need of autowired as well
+
+People often ask, is there a problem in constructor dependency? There is indeed one, if there are too many parameters, then imagine how your constructor will look
+
+(arg1, arg2, arg3, ... , argN) something like this, so actually it's not a disadvantage because it is giving us a hint that we should refactor our code since, this class is dependent on so many resources
+
+Circular Dependency
+- Use @Lazy annotation on top of @Autowired, so it will not create the object at the start, so one of the class can be created at the start, this breaks circular dependency
+
+- Suppose there are two classes, Order and Invoice, so in Invoice class, we can create a variable of order type without @Autowired or constructor, now when order class is invoked, it can create an object of type invoice without any problem, once order is created we can use @PostConstruct and set "this" to Invoice class
+
+Unsatisfied Dependency problem
+- Suppose we have a class Invoice, and we there's a dependency of Order order, now Order is a interface, so while initialization, which concrete implementation of Order to choose, for this you can use @Primary annotation of one of the concrete classes, Another approach is to using @Qualifier annotation and give a name, so you can use the same @Qualifier annotation while autowiring
+
++------------------+
+|    BEAN SCOPE    |
++------------------+
+
+@Scope(singleton)
+Only one object is created per IOC, this object will be eager by default
+
+@Scope(prototype)
+Every time when it is called, a new object will be created
+
+@Scope(request)
+New object will only be created per HTTP call
+
+Now, understand a scenario, what if a prototype class tries to create a scope request bean, so it will not be created until it is required because both are lazy in nature
+
+But, what if a singleton bean tries at startup? It will give us "Failed to start the application" because @Singleton wants all dependencies at start, and the other class has request scope, so it is lazy by default.
+
+To make it work we have to use a setting in @Scope(value="request", proxyMode=ScopedProxyMode.TARGET_CLASS), so at startup, it will create a dummy object and give it to the singleton class, and when a real HTTP request will come, it will replace it with the real object
+
+@Scope(session)
+It will create a new bean for every new session, obviously it is used in systems where session is maintained, so the bean will get destroyed in the /logout api, where session gets closed
+
+@Scope(application)
+If we want to maintain a single bean copy in multiple IOC containers in a huge application, then we can use this

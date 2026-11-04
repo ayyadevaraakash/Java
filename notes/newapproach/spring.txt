@@ -110,3 +110,27 @@ It will create a new bean for every new session, obviously it is used in systems
 
 @Scope(application)
 If we want to maintain a single bean copy in multiple IOC containers in a huge application, then we can use this
+
+Someday we might think that if we use @Qualifier then we are hardcoding which bean is required
+
+so for this what we can do is,
+class User:
+    Order order
+
+now we know that order is a interface so we can create two separate objects, one with qualifier of onlineOrder and another with offlineOrder, according to situation demand, we can then assign which one we want
+
+another approach is not to do @Component on top of concrete classes and interfaces, instead create a configuration file and take value from application.properties, and in this configuration file by using @Bean return the required instance to the IOC container
+
+Let's see another scenario, suppose we want to create a bean based on a key in application properties
+
+how to do this?
+we can use an annotation @ConditionalOnProperty(prefix, value, havingValue, matchIfMissing)
+
+prefix.value = x
+x will match with havingValue to take the decision of whether to create the bean or not
+
+matchIfMissing means, if this key is not present in application.properties then should the bean get created or not?
+
+Also, whenever you are using @ConditionalOnProperty you should make @Autowired(required=false)
+
+because if @Autowired is enabled + you did config not to create that bean, then definitely it will lead to error

@@ -427,3 +427,62 @@ RetentionPolicy.RUNTIME - Annotation will be recorded in .class file and will be
 
 @Inherited - child will have the annotation even if it is not written
 
++--------------------------+
+|    Exception Handling    |
++--------------------------+
+
+In java, you cannot write try block alone, you need to either write catch or finally. But, if you are using try-with-resources block, you can just write the try block, then too it's okay
+
+In catch block, you can only mention those exception that have some probability to be thrown in the try block, for example,
+
+try {
+	int x = 1/0;
+} catch (FileNotFoundException ex) {}
+
+"Unreachable catch block for FileNotFoundException. This exception is never thrown from the try statement body"
+
+If you catch a wide exception before and then a narrow exception, it will lead to unreachable code
+
+- If you are throwing a RUNTIME EXCEPTION then the caller method is not forced to catch that exception, it has to handle it only in case of COMPILE TIME EXCEPTION
+
+For creating our own exception, we have to make a class and make it child of some exception class like Exception, RuntimeException etc
+
+If there are 100 methods and everyone does "throws Exception" in signature, then stack trace will make the entire program very slow
+
+Type Comparison Operator - obj instanceof ClassName
+
++--------------------------+
+|        SWITCH CASE       |
++--------------------------+
+
+In switch case, case value should be a literal or a constant
+
+In switch case, giving default case is not mandatory
+
+SWITCH case only support these data types : int, short, byte, char, enum, String, Wrapper of (int,short,byte,char)
+
+In switch case, return statement is not possible
+
+From java 12 onwards, there is an additional syntax of switch statement that is available, this syntax can return values as well, given below
+
+String output = switch (x) {
+	case 1 -> "output1";
+	case 2 -> "output2";
+	default -> "nahi hai";
+};
+
+Also, once a case is matched, it will not run wildly, Also default is compulsory in this syntax
+
+Now, let's say you want to do some calculations and then return some value, so you would require a block of code, using arrow syntax if you desire a block of code, then you have to use "yield" for returning the value
+
+int res = switch (x) {
+	case 1 -> {
+		yield a+b;
+	}
+	case 2 -> {
+		yield a-b;
+	}
+	default -> -1;
+};
+
+yield requires that someone should catch the value at LHS

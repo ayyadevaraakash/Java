@@ -372,3 +372,58 @@ Inbuilt Functional Interfaces in Java (java.util.function)
 2. Supplier - T get();
 3. Function - R apply(T x);
 4. Predicate - boolean test(T x);
+
++------------------+
+|   Reflections    |
++------------------+
+
+It is used to examine a class, methods, fields, interfaces at runtime and also allows you to change it
+
+Whenever we write a program in java, suppose we created 5 classes, so JVM creates 5 objects of a special class named as "Class" i.e "class Class", these objects hold all the metadata about the corressponding classes that we created.
+
+Now how to get hold of that object of "class Class"?
+1. Class birdClass = Class.forName("Bird")
+2. Class birdClass = Bird.class
+3. Class birdClass = new Bird().getClass();
+
+After getting the object you can use methods as .getDeclaredMethods(), .getFields() etc
+
+.getMethods() will return public methods and methods of parent class (i.e Object class)
+.getDeclaredMethods() will return public and private methods of child class only
+
+To change a private field, you have to first call a method .setAccessible(true) and then you can access and change the private fields as well
+
+Also, remember - why reflection is not used? firstly, it breaks all rules and secondly, it is slow in nature
+
++------------------+
+|   Annotations    |
++------------------+
+
+- It is kind of metadata in the code, it sometimes helps the compiler so that it can check the correctness of code
+- Types of Annotations
+1. Pre defined - Annotations used on top of annotations, Annotations used in java code
+2. Custom annotations - Annotations created by us
+
+Heap Pollution - When object of one data type is pointing to object of another data type. It can be caused by using variable arguments and Object array, one such snippet is as follows,
+
+static void f(List<Integer>...lists) {
+	Object[] nums = lists;
+	List<String> x = List.of("Krishna", "Akash");
+	nums[0] = x;
+	System.out.println(lists[0]);
+}
+
+Some examples of Meta-Annotations (annotations on annotations)
+
+@Target - It tells us on which type of entity the following annotation should work
+@Target(ElementType.METHOD), it means this annotation is a method level annotation
+
+java 8 onwards, we have a feature of List<@annotation String>, this is called TYPE_USE annotation
+
+@Retention(XYZ) - It is used to specify the lifecycle of the annotation
+RetentionPolicy.SOURCE - Annotation will be discarded by the compiler after code compiles and will not be present in .class file
+RetentionPolicy.CLASS - Annotation will be recorded in .class file but will be ignored by JVM at runtime
+RetentionPolicy.RUNTIME - Annotation will be recorded in .class file and will be available in runtime (so reflection can be used)
+
+@Inherited - child will have the annotation even if it is not written
+

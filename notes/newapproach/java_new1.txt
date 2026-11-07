@@ -486,3 +486,101 @@ int res = switch (x) {
 };
 
 yield requires that someone should catch the value at LHS
+
++--------------------------+
+|       COLLECTIONS        |
++--------------------------+
+
+queue interface cannot store NULL value
+
+In deque interface, add, remove, get can throw exception if you do some invalid operation, so instead use offer, poll and peek methods
+
+PriorityQueue and ArrayDeque cannot store NULL values
+
+Thread safe (PriorityQueue) = PriorityBlockingQueue
+Thread safe (ArrayDeque) = ConcurrentLinkedDeque
+
+In list interface, we can use a "List Iterator" which can move in both forward and backward direction, It is actually a child of Iterator but provides additional feature for moving in reverse direction as well
+
+ListIterator<Integer> lt = nums.listIterator(start position);
+Now, you can traverse using .hasNext() and .next(), or .hasPrevious() and .previous()
+
+to start from backside, we have to keep start position as nums.size()
+
+ArrayList can store NULL values, but you cannot initialize it with List.of()
+
+List.of() does not support NULL values, so you can use Arrays.asList()
+
+Null Relation to Collections:
+ArrayList, LinkedList, Vector, Stack, HashMap(values), LinkedHashMap(values), TreeMap(values) = N
+HashSet, LinkedHashSet, HashMap(key), LinkedHashMap(key) = 1
+TreeSet, PriorityQueue, ArrayDeque, TreeMap, ConcurrentHashMap(K,V) = 0
+
+Thread safe(ArrayList, LinkedList) = CopyOnWriteArrayList
+
+Why Map Interface has a separate hierarchy?
+All collections in Iterable tree are based on data structures which stores values, and operations involved on those values and indices, but in map interface we are interested in storing the key, value pairs and operations which deal with K,V pairs
+
+==> HASHMAP
+
+Initially, there is a interface Map<K,V>, in this interface there is a nested interface Entry<K,V> which, if some class implements has to implement getKey(), getValue() etc methods
+
+So Map<K,V> Interface has size(), isEmpty(), containsKey() etc
+Entry<K,V> has getKey(), getValue() etc
+
+Now HashMap<K,V> is one of the class which implements Map<K,V>, so hashmap has to provide implementation for size(), isEmpty() etc. Now, in hashmap, we have a nested static class Node<K,V> which implements the Map.Entry<K,V> interface so it has to provide the implementation of getKey(), getValue() etc
+
+Also, in class HashMap<K,V> there is a entry Node<K,V>[] table, which create a array of Node
+
+by the way, class Node looks like this,
+class Node:
+	final int hash;
+	final K key;
+	V value;
+	Node<K,V> next;
+	
+We already know the implementation of hashmap, so I will only write some important things which should get special attention
+
+Initial settings of hashmap,
+DEFAULT_INITIAL_CAPACITY = 1 << 4; (2 power 4 is 16)
+DEFAULT_LOAD_FACTOR = 0.75f
+TREEIFY_THRESHOLD = 8;
+
+Now, when size of hashmap reaches 0.75 (75%) of initial capacity, then the capacity increases to (2 power 5 = 32) and this process continues, Thus, we understood what is initial capacity and load factor
+
+Now, we already know that at every array index we are maintaining a linked list, when this linked list size becomes greater than or equal to TREEIFY_THRESHOLD, then the linked list gets converted to balanced binary search tree (Red Black Tree)
+
+Thread safe(HashMap) = ConcurrentHashMap or HashTable
+
+==> LINKED HASH MAP
+
+It is a kind of hash map, but it has two special features, it can maintain either
+1. Insertion Order
+2. Access Order (Acces the most recently used ones)
+
+Internal implementation is same as hash map, but it uses doubly linked list, In class LinkedHashMap we have a nested class Entry<K,V> extends HashMap.Node<K,V>, so we have those 4 fields in hashmap plus before and after pointer, so, it means, whenever a new node is inserted, the value is stored in the after pointer, thus maintaining insertion order
+
+Now, when initializing LinkedHashMap we can use the constructor LinkedHashMap(int initialCapacity, float loadFactor, boolean accessOrder), if we give accessOrder as true, we can have a "Access Order" LinkedHashMap
+
+LinkedHashMap is not a thread safe collection and there is no thread-safe version available as well. To get a thread safe version of it, we will use the Collections utility class and create a object by this syntax,
+Map<K,V> mp = Collections.synchronizedMap(new LinkedHashMap<>());
+
+==> Tree Map
+
+It is a sorted version of hashmap which maintains ascending order of keys when storing enteries, It internally uses Red Black Tree
+
+SortedMap methods : heapMap(till which key), tailMap(from which key), firstKey(), lastKey()
+
+NavigableMap methods : lowerEntry(key), lowerKey(key), floorEntry(key), floorKey(key), ceilingEntry(key), ceilingKey(key), higherEntry(key), higherKey(key), firstEntry(), lastEntry() etc
+
+I personally thing that NavigableMap methods can be used to perform binary search on an array, it can replicate upper bound and lower bound methods
+
+==> Default Initial Sizes of Collection
+ArrayList - 0 (initial add makes it 10), every time grows by 1.5 times
+LinkedList - No need of capacity, it is node based
+Vector, Stack - 10
+HashMap, LinkedHashMap, HashSet, LinkedHashSet, ConcurrentHashMap - 16 with load factor 0.75
+TreeMap, TreeSet - no fixed capacity
+HashTable - 11 with load factor 0.75
+ArrayDeque - 17
+PriorityQueue - 11

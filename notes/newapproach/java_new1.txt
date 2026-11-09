@@ -541,6 +541,10 @@ class Node:
 	
 We already know the implementation of hashmap, so I will only write some important things which should get special attention
 
+HashMap Implementation follows a contract between equals() and hashCode()
+1. If two objects are equal according to equals(), they MUST have the same hashCode()
+2. If two objects have the same hashCode, they don't necessarily have to be equal.
+
 Initial settings of hashmap,
 DEFAULT_INITIAL_CAPACITY = 1 << 4; (2 power 4 is 16)
 DEFAULT_LOAD_FACTOR = 0.75f
@@ -584,3 +588,138 @@ TreeMap, TreeSet - no fixed capacity
 HashTable - 11 with load factor 0.75
 ArrayDeque - 17
 PriorityQueue - 11
+
+==> Set
+All entities in Set family is internally using the Map interface, so implementation is same
+
+Thread safe(HashSet) is given by Set<Integer> st = ConcurrentHashMap.newKeySet();
+In ConcurrentHashMap class, there is a static method newKeySet() which returns a thread safe version of key set which can act as a set
+
+Thread Safe(Linked Hash Set) is given by Set<Integer> st = Collections.synchronizedSet(new LinkedHashSet<>());
+
+In LinkedHashSet, accessOrder feature is not available unlike LinkedHashMap
+
+==> Fail Fast
+If we try to modify the structure of a collection while traversing, then it will throw a ConcurrentModificationException
+
+We can avoid it by using Thread safe versions like CopyOnWriteArrayList, ConcurrentHashMap etc. Although not every thread safe version guarantees this, example- Vector is thread safe but is still diagnosed with ConcurrentModificationException
+
++--------------------------+
+|        STREAM API        |
++--------------------------+
+
+Ways to create a stream
+1. From collections --> ds.stream()
+2. From array --> Arrays.stream(arr)
+3. From static method --> Stream.of(x,y,z)
+4. Building by stream builder is as follows
+
+Stream.Builder<Integer> streamBuilder = Stream.builder();
+streamBuilder.add(101).add(201);
+streamBuilder.add(301);
+Stream<Integer> ans = streamBuilder.build();
+
+5. From stream iterate --> Stream.iterate(start, increment logic).limit(number of values);
+
+Stream<Integer> ans = Stream.iterate(1, (Integer val) -> val + 2).limit(5);
+
+In Streams, all intermediate operations are lazy in nature, which means until and unless terminal operation is not called, it will not execute anything
+
+==> Sequence of Operations in Streams
+When one element is pick up for the pipeline, it will move in the pipeline as long as possible, then only other element is called. In our traditional thinking, we think that all elements pass through operation A, then all pass to operation B etc, which is incorrect
+
+Once a stream is closed using a terminal operation, it cannot be used again
+
+Parallel Stream ==> It helps to perform the operations parallely taking advantage of multi core CPU.
+- It uses "split iterator" function to divide the elements in to smaller parts like merge sort and then solve each unit and merge the results
+- Internally it uses a technique called "Fork Join" pool technique
+
++--------------------------+
+|      MULTITHREADING      |
++--------------------------+
+
+Whenever a program is made to run, it will be assigned a JVM instance which will have some part of heap space. Now, let's say you want to customize how much heap size to be given, then you can do it at the start of the program by using this command
+
+java -Xms256m -Xmx2g className
+
+There are various terms in JVM instance which is created
+
+1. Code Segment - It contains the compiled bytecode (machine code) of the program, It is shared among threads, it is in read only mode
+
+2. Data Segment - It contains global and static variables, threads can modify these variables so synchronization is required
+
+3. Heap - It is common for all threads, whenever we use the "new" keyword, objects are stored here, threads can read and modify heap data so again proper synchronization is required
+
+4. Stack - Each thread is having its own stack, which is used to manage method calls, local variables etc
+
+5. Register - Each thread is having its own register, when JIT converts bytecode into machine code, it uses registers to optimize the machine code, It also helps in context switching
+
+6. Counter - Stores the address of the instruction which is to be executed
+
+Thread Lifecycle
+New, Runnable, Waiting, Blocked, Timed Waiting, Terminated
+
+New - A thread that has not yet started is in this state.
+Runnable - A thread executing in the Java virtual machine is in this state.
+Blocked - A thread that is blocked waiting for a monitor lock is in this state.
+Waiting - A thread that is waiting indefinitely for another thread to perform a particular action is in this state.
+Timed Waiting - A thread that is waiting for another thread to perform an action for up to a specified waiting time is in this state.
+Terminated - A thread that has exited is in this state.
+
+Now, let's see some points
+Blocked - Suppose a thread was working and suddenly some I/O operation is there, so it will go to blocked state, now when it goes to blocked state, it will release all monitor locks
+
+Waiting - wait() is called, it will resume when notify() is called again, it will release all monitor locks
+
+Timed Waiting - sleep() or join() called, so it will wait for some time, it will NOT release all monitor locks
+
+There's a question, what is monitor lock?
+When you use the synchronized keyword on any method, it will acquire a lock on the object by which it was called, now even though some other method will be called, they cannot acquire a lock if they are using the same instance of the class, because every class has one monitor lock
+
+wait() - It stops execution and waits until other thread notifies it
+notify() - wake up any one thread which was waiting
+notifyAll() - wake up all threads which are waiting for this monitor's lock
+
+only wait() releases the lock
+notify() and notifyAll() does not releases lock, just alerts everyone that once the method ends, lock is going to be available
+
+Why stop, resume and suspended method is deprecated?
+stop - terminates the thread abruptly without releasing the lock, no resource clean up happens
+suspend - it does the same work as wait(), but does not release the lock
+resume - it is used to resume the thread which is suspended with suspend method, since suspend is deprecated, resume is also deprecated
+
+Till now, we have only seen monitor locks, and we know that, monitor lock acquires lock on object, so different objects working are not dependent on each other
+
+But, let's say there is a scenario where there is a critical section, and no matter multiple objects are there but we want only one thread should access it, then we need some other kind of locks
+
+We have some other kind of locks as well which are,
+1. Reentrant Lock
+
+In this, instead of objects, the lock depends on the lock object created by us, we will first create a object of reentrant lock and pass this lock, with this object, we can call the .lock() and .unlock() method
+
+2. ReadWriteLock
+
+In this, we have two types of lock, Shared Lock and Exclusive Lock, whenever we want to do read operation we can acquire the shared lock and else we can acquire the exclusive lock, Now what is the matrix of possibilities of shared-exclusive lock is quite simple and covered in CSE engineering
+
+By the way, ReadWriteLock is an interface, and ReentrantReadWriteLock is a concrete implementation so we have,
+ReadWriteLock lock = new ReentrantReadWriteLock();
+
+again this lock is also not dependent on objects, rather everyone shares this lock
+
+3. Stamped Lock
+
+Before starting, understand this,
+Locks are of two types, Pessimistic Locking and Optimistic Locking
+
+Pessimistic locking means to acquire a lock, do some work in critical section and then release the lock, whereas optimistic locking means to read the object and note its state, now do some operation and when you are going to commit, first check whether the state of the object matches the state which you stored earlier, If YES then commit, else rollback because some other process has modified the value in between, again you can start from beginning
+
+Stamped Lock supports both ReadWriteLock functionality as well as Optimistic locking functionality. You can refer internet for methods available for both of them, It's quite simple and looks like ReadWriteLock
+
+4. Semaphore
+
+In semaphore, the only difference is that we can send multiple threads in critical section. We can do this by creating a semaphore object and giving the number of threads in the constructor.
+
+Now, we already know about wait() and notify(), these are used in inter-thread communication when the locks are acquired by synchronized keyword, i.e "monitor locks"
+
+But, what if we are not acquiring the monitor locks, what if we are dealing with custom locks that we saw just now, so in such scenario we have similar methods like await() and signal() which are replacement of wait() and notify()
+

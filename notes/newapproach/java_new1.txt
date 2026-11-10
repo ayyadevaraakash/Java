@@ -752,10 +752,10 @@ Java Executor Framework — Interface and Class Relationships
                            |
                   ExecutorService (interface)
                            |
-             +-------------+-------------+
-             |             |             |
-         implements    implements     extends
-             |             |             |
+             +-------------+-------------------+
+             |             |                   |
+         implements    implements           extends
+             |             |                   |
      ThreadPoolExecutor  ForkJoinPool  ScheduledExecutorService
          (class)          (class)          (interface)
                                                |
@@ -828,3 +828,72 @@ Again, we have a method .thenAccept which will accept a consumer and do somethin
 
 We also have .thenCombine method which can combine results of two completable futures
 
+==> Executors
+
+It is a utility class in java.util.concurrent package which allows us to create various types of thread pools
+
+i. Fixed Thread Pool
+
+ExecutorService obj = Executors.newFixedThreadPool(number of threads)
+
+In this we have a fixed number of threads, Also, threads will not get destroyed even though it is kept idle. This should only be used if we know how much workload will be there in prior state
+
+ii. Cached Thread Pool
+
+ExecutorService obj = Executors.newCachedThreadPool()
+
+In this, we can create INT_MAX number of threads, depending on number of tasks that come, If any thread is not being used for 60 seconds, it will get destroyed. It is good for handling short lived tasks, but if alot of huge tasks come, it is dangerous
+
+iii. Single Thread Executor
+
+ExecutorService obj = Executors.newSingleThreadExecutor()
+
+In this, only a single thread is there, and it will be alive even if idle, queue will be maintained, to be used when we need to process the tasks sequentially, Obviously there is no concurrency
+
+iv. Work Stealing Pool Executor
+
+It is used to create fork-join pool, It is a kind of pool which creates some threads which we mention / equal to available threads. These threads are used to perform recursive tasks
+
+Working of fork-join pool
+1. In this we maintain a submission queue where tasks are allocated, if any thread is idle they will pick up the task and proceed with it
+2. In this architecture, each thread maintains a separate queue as well, "work stealing queue", whenever the thread does a recursive action, it proceeds with the first branch of recursion and it stores the other branches in to its work stealing queue
+3. Now, whenever a thread becomes idle, it will first check the submission queue, if there is no task available there as well, then this thread will steal the task from other thread's work stealing queue
+4. Remember one thing, each thread picks the task from front and steals the task from the back of other thread's queue
+5. submit() stores the task in submission queue, fork() stores the task in the work stealing queue
+
+ForkJoinPool obj = ForkJoinPool.commonPool();
+Future<Integer> ans = obj.submit(new ComputeSum(0,100));
+
+class ComputeSum extends RecursiveTask<Integer> {}
+
+In ComputeSum class, we will write the recursive code and call fork() for all sub tasks, and join() to get the result of those tasks
+
+.shutdown() - initiate orderly shutdown of executor service, it will not accept any new task but if some task have already started they will continue
+
+.awaitTermination() - this method takes in some time, and waits till that time, if the executor task is completed in that time interval then it will return true else false
+
+.shutdownNow() - it will put the best effort to shutdown the executor service and interrupt the ongoing task as well
+
+==> Scheduled Thread Pool Executor
+
+If you make a thread pool of this kind, then you can call the .schedule() and start tasks at some fixed delay or intervals etc
+
+.schedule(task, delay for first time, unit)
+.scheduleAtFixedRate(task, delay for first time, interval, unit)
+.scheduleWithFixedDelay(task, delay for first time, wait after previous time ended, unit)
+
+In .scheduleAtFixedRate() suppose we kept interval=3, but the first task works for 6 seconds, then it will get scheduled in the queue, and when the first task ends, it will start immediately
+
+==> Thread Local (Class)
+
+It is a class which provides a variable storage to threads, once you create a object of this class, then any thread can use this object to store data in their respective thread local variable
+
+Remember, in some ideas we saw we are going to use a single thread multiple times for different tasks, so in such a case if you want to clean up the data stored in that thread local variable, then you can call .remove()
+
+==> Virtual Thread (java 19 onwards)
+
+Till now whatever threads we have seen are known as "platform threads" which means, when a thread is created, it makes a system call and creates a thread at OS-level, there is a direct mapping between java thread and OS thread
+
+Now, we have a idea of virtual thread, which can be used, if let's say there are 2 processors, then also you can make 10 virtual threads, out of those threads, whoever wants to run a task can connect to one of OS threads and perform the task, Now let's say if some thread wants to do some I/O operation etc, then it can disconnect from the OS-thread and mean while other thread will connect and proceed
+
+Virtual thread creation time is very less, as compared to create lot of OS threads

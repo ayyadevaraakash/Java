@@ -723,3 +723,108 @@ Now, we already know about wait() and notify(), these are used in inter-thread c
 
 But, what if we are not acquiring the monitor locks, what if we are dealing with custom locks that we saw just now, so in such scenario we have similar methods like await() and signal() which are replacement of wait() and notify()
 
+==> Atomic (Lock free)
+
+Suppose we want to achieve concurrency, so we have two methods of doing so,
+1. Locks, that we have already studied
+2. Atomic Integer, Atomic Boolean etc
+
+CAS (compare and swap) - this is a low level operation which directly involves CPU, in this, we first read a value, then we compare it with the expected value, and then if it is same then only we update it
+
+In Atomic Integer, CAS is used
+
+Now there is a problem in CAS as well, suppose thread reads x=10, now before the next step executes, some thread comes and performs x=12, then x=10 again, now thread 1 will think nothing changed, but in reality it went to 12 and came back to 10, this is called as ABA problem, this problem can be easily resolved by maintaining versions or timestamps
+
+==> Thread Pool
+
+It is a group of threads which are pre-created so that whenever some tasks comes, we can re use these threads instead of creating and destroying threads every time
+
+Advantages
+1. Thread creation time can be saved (allocation of stack, PC etc)
+2. Overhead of managing the threads can be saved
+3. If more number of threads are there, then context switch will happen again and again, which will waste time, because in the process of context switch, CPU will be idle. Maintaining a thread pool can limit excess number of threads
+
+Java Executor Framework — Interface and Class Relationships
+
+                    Executor (interface)
+                           |
+                         extends
+                           |
+                  ExecutorService (interface)
+                           |
+             +-------------+-------------+
+             |             |             |
+         implements    implements     extends
+             |             |             |
+     ThreadPoolExecutor  ForkJoinPool  ScheduledExecutorService
+         (class)          (class)          (interface)
+                                               |
+                                           implements
+                                               |
+                                    ScheduledThreadPoolExecutor
+                                             (class)
+
+All these are stored in java.util.concurrent
+
+Let's see the ThreadPoolExecutor class,
+It is used to create a customizable thread pool
+
+There will be a thread pool with a core size of lets say 3, means there are 3 threads available to do some task, let's say 3 tasks come, so 3 threads will be assigned 3 tasks respectively, Now what if another tasks comes? There will a queue maintained which will hold the new tasks, let's say the queue also got full and another tasks comes, then? So, there is another parameter maxPoolSize, which is suppose 5, so in runtime 2 new threads will be created serving for more tasks which are coming. Again let's say more tasks come then we don't have any option but to rejected them
+
+public ThreadPoolExecutor(
+	int corePoolSize
+	int maximumPoolSize
+	long keepAliveTime
+	TimeUnit unit
+	BlockingQueue<Runnable> workQueue
+	ThreadFactory threadFactory
+	RejectedExecutionHandler handler
+)
+
+corePoolSize - initial size of thread pool, we expect these will complete majority of tasks
+
+keepAliveTime - if "allowCoreThreadTimeOut" is kept true, then keepAliveTime tells us the time in which an idle thread will be destroyed
+
+maxPoolSize - this is maxPoolSize = corePoolSize + extra threads, these extra threads will be used when queue is full
+
+TimeUnit - it tells us the unit of time written in keepAliveTime
+
+BlockingQueue - It tells us which data structure to use for the workQueue, we can use ArrayBlockingQueue if we want a bounded queue and LinkedBlockingQueue if we want a unbounded queue
+
+ThreadFactory - It is a interface to provide some configuration such as thread name, thread priority, daemon flag etc
+
+RejectedExecutionHandler - when the maximumPoolSize is also exhausted we have to reject the thread, but what exception or action to perform when rejecting, so we have some
+new ThreadPoolExecutor.AbortPolicy --- throws RejectedExecutionException
+new ThreadPoolExecutor.CallerRunsPolicy --- the thread which delegated it to thread pool, ask the task to go and run on that thread only
+new ThreadPoolExecutor.DiscardPolicy --- silently discard without any exception
+new ThreadPoolExecutor.DiscardOldestPolicy --- discard the oldest one in the queue to accomodate new task
+
+==> Future
+
+In executor interface, we have a method execute(), which we use in ThreadPoolExecutor as well to send the task. Now this execute method actually returns a Future<?> object
+
+This future object can return us the status of the work that is going on by the thread. It has several methods like .isDone(), .cancel() etc, which is used to examine the status of the task
+
+.get() is used to make the calling thread wait, until the task is completed by the working thread, while .get(time, unit) is used to check the status after the specified time
+
+Now, we already know execute() method, there is another method known as submit() which comes in three flavours,
+1. submit(Runnable) -> It will not return anything
+2. submit(Runnable, Data structure) -> it cannot return anything but can do changes in the data structure provided
+3. submit(callable) -> it can return any value and future will hold that
+
+==> Completable Future
+
+It is a child of future, so it provides all functionalities + chaining of other tasks as well. To get a completable future back we use a static method in class CompletableFuture, which is CompletableFuture.supplyAsync(()->{}) which accepts a supplier. It will perform some work and give back the output in async manner
+
+We have two more methods, .thenApply() and .thenApplyAsync(), it is used to do some operation on the result of previous task, .thenApply() is a synchronous operation which will be done on the same thread which did the previous task where as .thenApplyAsync() creates a new thread and does the work in async fashion
+
+Also, remember that if you have multiple .thenApplyAsync(), there is no guarantee on the order of execution of the tasks
+
+In such scenarios, if we want the result of previous async operation to be used in the next one, we use .thenCompose, it will work in async manner but the thread will be same as previous, Also it flatten the result in to a single CompletableFuture object rather than nested object in the case of .thenApply() versions
+
+.thenComposeAsync() also make sure that the result of previous operation will be used in next operation, but it also does it in some other thread
+
+Again, we have a method .thenAccept which will accept a consumer and do something
+
+We also have .thenCombine method which can combine results of two completable futures
+

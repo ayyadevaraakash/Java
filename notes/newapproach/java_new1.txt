@@ -896,4 +896,80 @@ Till now whatever threads we have seen are known as "platform threads" which mea
 
 Now, we have a idea of virtual thread, which can be used, if let's say there are 2 processors, then also you can make 10 virtual threads, out of those threads, whoever wants to run a task can connect to one of OS threads and perform the task, Now let's say if some thread wants to do some I/O operation etc, then it can disconnect from the OS-thread and mean while other thread will connect and proceed
 
-Virtual thread creation time is very less, as compared to create lot of OS threads
+Virtual thread creation time is very less, as compared to creation time of lot of OS threads
+
++--------------------------+
+|      PROJECT LOMBOK      |
++--------------------------+
+
+It is used to reduce the boiler plate code, we have already used lombok in our projects so I will not write down all basic things, I will only write those parts which may feel tricky
+
+val - automatically infer data type, makes the variable final
+var - automatically infer data type
+
+@Getter(AccessLevel.PRIVATE), same can be done with setters, it will make the getter/setter method private or any access modifier that you mention
+
+@Getter(AccessLevel.NONE) - skip its getter
+
+@ToString on top of class to generate to string method, @ToString.Exclude to exclude it, Also, if you want those on top of whose @ToString.Include is written, then you can write on top of class, @ToString(onlyExplicitlyIncluded=true)
+
+@EqualsAndHashCode.Exclude on field to exclude it in "equals and hashcode" contract
+
+@Data - to string + equals and hashcode + getters + setters + req args constructor
+
+@Value - Immutable version of @Data, all fields are private final, no setters, final class, to string, equals and hashcode, getters, req args constructor
+
+@Builder - to do .builder().field1(val1).field2(val2).build()
+
+@Cleanup - if you put it in some resource like InputStream, then before the control goes out of the current scope, it will be cleaned up / resource will be closed
+
++--------------------------+
+|   SEQUENCED COLLECTIONS  |
++--------------------------+
+
+It is Java 21 feature
+
+We have observed that the family of Deque, List, Linked versions of set and map, Tree versions of set and map have a common issue, all these maintain a sequential flow, but if you look at hash versions of set and map, it is totally random and does not maintain any sequence
+
+Now, let's focus our attention on collections that maintain sequence, all these have different method names for adding element at first, last, getting the reverse view, remove at first and last, so to give a common method name for all these operations, SequencedCollection, SequencedSet, SequencedMap were introduced.
+
+They provided methods for all those operations, but remember that addFirst and addLast kind of operations will give "UnsupportedOperationException" since those are illogical in sorted collection
+
++-----------------------+
+|     SEALED CLASSES    |
++-----------------------+
+
+It was introduced in Java 17
+
+We have already seen that if we create a simple class or interface, we don't have control on which classes or interfaces can extend or implement this class
+
+but now with sealed feature we can do that, let's say we define the class as follows
+"public sealed interface Shape permits Circle, Rectange"
+
+So, by this, now we have created a rule that only Circle and Rectange can implement or extend the Shape Interface
+
+sealed and permits --> can decide who can become child
+non-sealed --> allow any children
+final --> cannot have children
+
++--------------------+
+|     SWITCH CASE    |
++--------------------+
+
+We already have switch case, but here's a powerful update in Java 14
+
+1. case check support comma separated values
+2, It will not go wild if "break" is not present
+3. It is designed as lambda function, so it supports return via yield keyword, moreover if it's too simple then you can omit yield word as well
+4. When switch(enum variable), it will force us to check all possible values
+5. All case blocks can have scope using braces, variables will be local to scopes
+
++--------------------+
+|     ADDITIONAL     |
++--------------------+
+
+It was introduced in java 16, if (obj instanceof String s), in this syntax we can check the data type and if it is success we will assign it right way and do the type cast as well
+
+if (obj instanceof String s) {}
+
+Remember you can add && but || is not allowed, as it creates ambiguity

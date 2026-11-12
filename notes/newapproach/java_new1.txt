@@ -964,12 +964,87 @@ We already have switch case, but here's a powerful update in Java 14
 4. When switch(enum variable), it will force us to check all possible values
 5. All case blocks can have scope using braces, variables will be local to scopes
 
++-----------------+
+|     RECORDS     |
++-----------------+
+
+It was introduced in java 16. In earlier days, whenever we create a class we had to write getters, setters, constructors, equals and hashcode etc. This problem was solved at the later stage by LOMBOK, but as we know, lombok is something external to java which we add via pom.xml file
+
+Now, with this feature called as "Records" we can do it with core java itself
+
+public record User(String name, int age) {}
+
+It creates it as,
+- final class
+- parameterized constructor
+- getters, with method name as name(), age()
+- equals and hashcode based on fields
+- toString() based on fields
+
+Any record is by default child of java.lang.Record, so obviously it cannot become child of anyone else now, since it is final it cannot become parent of anyone as well, so it can only implement interfaces
+
+Records work on a principle --> all fields should be shown at the signature, so you cannot create any field inside record body, but you can create static fields, because it belongs to the record itself
+
+- you can create your own constructor but you have to call the canonical constructor with all fields
+- you can create constructor with a short cut, by only mentioning public User {}, without giving parameters
+- If one of the fields is something like List<>, then remember to give back defensive copy in construtor, otherwise elements can be added or removed, even though it is final in nature
+
+We can have nested records with any access modifier, but it will always be "static" in nature. The reason is if we make it non-static, then it can access outer class variables, which will break the rule that "all fields should be shown in signature", inner record will show (int b), but can access "a" and "b", because of this we can only keep it static in nature
+
+We also have "local records" which can be defined in any block scope, it cannot have any access modifiers as well as it does not fall under "static / non-static" theory, because all those things makes sense when dealing with classes, but in block scope those things don't make any sense
+
 +--------------------+
 |     ADDITIONAL     |
 +--------------------+
+
+==> Enchanced instanceof
 
 It was introduced in java 16, if (obj instanceof String s), in this syntax we can check the data type and if it is success we will assign it right way and do the type cast as well
 
 if (obj instanceof String s) {}
 
 Remember you can add && but || is not allowed, as it creates ambiguity
+
+==> Enchanced Switch Case
+
+In java 21, another update came for switch case
+- It can support object matching as well, it works in relation with instanceof operator, if you pass switch(obj), then the cases can look like "case Integer x" which means if obj is Integer then x variable will be initialized with that obj value
+
+Now, let's say you have switch(obj), then you can only include all its classes in the same tree branch in which this object belongs
+
+Same can be done with enums as well, Also switch is now null safe, even though null value is given it will not throw NPE, instead it will just not match itself to any case
+
+Again, instanceof cannot be combined with || condition
+
+Also suppose immediately after matching case, you want to check more conditions then you can use "when" keyword, it is called as guarded pattern
+
+case String s when (s.contains('A') || s.contains('B')):
+	// code
+	
+==> Text Blocks
+
+In java 15, we have a new way of writing long text on multiple line, like suppose we want to write json and all, so earlier we used to use a lot of escape sequences to balance it properly, now you can just write the text in """write anything here"""
+
+There are certain rules for using this,
+1. """ starting quote should not contain anything else
+2. All trailing whitespaces are removed, if you want whitespaces, you can give it and write \s at last
+3. If you want that text should not break into multiple lines, then each line should end with \
+
+Since it's a normal text, we can call methods like .toUpperCase(), and even we can give %s, %d and do .formatted(args)
+
+==> Optional Class
+
+Any method can return NULL value, and it can lead to NPE, If we use optional class, we cannot directly call getters of the object, we first have to check .isPresent and .get to get the object
+
+Some important methods in Optional
+.isPresent()
+.isEmpty() -- java 11
+.get()
+.orElse() / .orElseGet(supplier) / .orElseThrow() -- java 10 / .orElseThrow(supplier)
+.ifPresent(consumer)
+and so on
+
+Where not to use Optional?
+- class variables
+- method parameters
+- serializable class (jackson won't support)

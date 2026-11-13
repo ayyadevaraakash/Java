@@ -1048,3 +1048,45 @@ Where not to use Optional?
 - class variables
 - method parameters
 - serializable class (jackson won't support)
+
+==> File Handling
+
+File file = new File("system.txt")
+
+this line only represents a filesystem path and provides helper methods to interact with the path via the OS
+
+There are two abstract classes, InputStream and OutputStream
+We know that no matter what content is written in the files, at the end of the day everything is just bits and bytes
+
+Implementation of InputStream and OutputStream,
+FileInputStream and FileOutputStream - It provides certain methods to read and write, but the issue is for every byte it reads/writes, it makes a system call to the OS, and if the contents are too large, every system call can make the system go down
+
+Now, there are two classes, BufferedInputStream and BufferedOutputStream, whenever you want to read or write something, it will directly read 8192 bytes of data at once from a system call and load it into the memory, now next time you can directly read from the memory instead of making a system call, similarly while writing to the disk, it will be written to the memory and once you wrote contents upto 8192 bytes, it will write that to the disk
+
+Let's see the next problem, till now whatever classes we saw, reads the data byte by byte, but we know that many kind of data is represented in multiple bytes, for example, an integer is represented in 4 bytes
+
+so how to read 4 bytes together so that it makes sense, we can use DataInputStream and DataOutputStream
+It has methods specifically designed to read integer, float etc
+
+Now, if you want to read objects then? for such tasks we have ObjectInputStream and ObjectOutputStream
+
+These classes have the power to convert java class to bytes (serialization) and bytes to java class (deserialization)
+
+In some scenarios, we might have encoding issues, we need to specify which encoding we want, UTF-8 or UTF-16, for this we can use, OutputStreamWriter and InputStreamWriter
+
+Now, there is BufferedReader and BufferedWriter, It will fetch 8192 bytes at the time as well as supports encoding decoding, Also, it provides convenient methods to do all the operations
+
+==> HashTable vs ConcurrentHashMap
+
+HashTable internally has the same working like hashmap, but it's thread safe, hashtable maintains monitor lock on object, so only one thread can run a method at a time on that object
+
+ConcurrentHashMap also has the same working like hashmap, but when let's say some thread wants to add a node to bucket location which is empty, it will use CAS and if it's still empty, it will insert the node, if in that mean time some other thread had inserted then it will try again after some time, let's say there is already a node in a bucket, then it will synchronize based on first node, and insert the node in that bucket, In this way bucket level locking is used, instead of monitor lock which blocks the entire object
+
+==> CopyOnWriteArrayList
+
+It is a thread safe version of list interface, which is also immune to ConcurrentModificationException, In this, when two threads come simultaneously, one for read operation, one for write operation,
+
+- read operation thread will see the list present in the memory
+- write operation thread will create a copy and add element in that copy, once it is successful, it will make the variable point to this new data structure, if during this some thread is doing read operation, they will read the old data only
+
+suppose two threads want to add element at the same time, so CopyOnWriteArrayList will use Reentrant Lock and only one thread can do changes at a time, so it will never lead to wrong state

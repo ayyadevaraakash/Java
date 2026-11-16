@@ -134,3 +134,172 @@ matchIfMissing means, if this key is not present in application.properties then 
 Also, whenever you are using @ConditionalOnProperty you should make @Autowired(required=false)
 
 because if @Autowired is enabled + you did config not to create that bean, then definitely it will lead to error
+
++------------------+
+|     PROFILES     |
++------------------+
+
+In base application.properties we write, spring.profiles.active=dev, then dev environment is active, means it will fetch application-dev.properties, let's say there is a property missing in dev application properties file, so it will start searching that in the base file, if it's not there in the base file as well, then we get an error
+
+command to run using spring profiles
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
+
+we can also do it in pom.xml using <profiles> tag, and while running you can do mvn spring-boot:run -Pdev
+
+spring.profiles.active=prod,dev
+
+it will create beans for both, but it will select application-dev.properties
+
++-----------------------------------+
+|    ASPECT ORIENTED PROGRAMMING    |
++-----------------------------------+
+
+In simple terms, AOP is the process to intercept any running method and do some task, the specified task can be performed before, after or around the method
+
+It is used for tasks such as logging, transaction management etc which is repetitive code in multiple methods
+
+dependency has to be added in pom.xml which is spring-boot-starter-aop
+
+A simple AOP code will look like,
+
+@Component
+@Aspect
+public class LoggingAspect {
+	@Before(POINTCUT) {
+		// ADVICE
+	}
+}
+
+You can create a separate class where in you can write the code which will be called while intercepting any method, POINTCUT is an expression which tells spring which method should get intercepted, ADVICE is the piece of code that should be run when interception happens
+
+Types of Pointcut:
+1. @Before("execution(public String {fully qualified path}.{methodName}())")
+
+You can use "*" which means anything
+You can use ".." which means 0 or more
+
+2. @Before("within({fully qualified path})") --> It will run for all methods in this path
+
+3. @Before("@within({fully qualified path})") --> It will match any class having this annotation
+
+4. @Before("@annotation({fully qualified path})") --> It will match any method with this annotation
+
+5. @Before("args(String,int)") --> matches any method with particular arguments, If the data type is a class you can write the fully qualified class name as well
+
+6. @Before("@args({fully qualified path of annotation})") --> matches arguments whose class is annotated with the annotation
+
+7. @Before("target(fully qualified path)") --> matches any method which is invoked using the object of this class / interface
+
+POINTCUT can be combined by using AND, OR condition
+
+==> Named Pointcuts
+
+@Pointcut("pointcut definition here")
+public void myPointcut() {}
+
+@Before("myPointcut()")
+public void beforeMethod () {
+	// code
+}
+
+Advice --> block of code which is executed when some pointcut matches is called advice
+
+We have already seen @Before, @After is self explanatory, now let's see @Around,
+
+@Around(pointcut expression)
+public void aroundMethod(ProceedingJointPoint joinPoint) throws Exception {
+	// do something before method invocation
+	joinPoint.proceed();
+	// do something after method invocation
+}
+
+An object of ProceedingJointPoint is given to us which holds the control of invocation of method, so we can place it in our method according to our need
+
+Internal Working of AOP:
+
+Who is parsing the pointcut expression --> PointcutParser.java
+
+If any class is eligible for aspect, it will create a proxy, either JDK dynamic proxy or CGLib proxy, it is done by AbstractAutoProxyCreator.java
+
+If class implements an interface --> JDK proxy is used, otherwise CGLIB proxy is used
+
++---------------------+
+|    TRANSACTIONS     |
++---------------------+
+
+@Transactional provides ACID properties, Internally there is an pointcut which matches all transactional annotation and whenever such method is invoked, it will call an advice, which will,
+1. open a transaction
+2. proceed with our method
+3. if something goes wrong, it will rollback, else it will commit
+
+All this is already written in TransactionalInterceptor class and the advice method name is invokeWithinTransaction
+
+==> Hierarchy of Transaction Managers
+
+<<interface>>
+TransactionManager
+
+<<interface>>
+PlatformTransactionManager -- getTransaction(), commit(), rollback()
+
+<<abstract class>>
+AbstractPlatformTransactionManager -- default implementation of PlatformTransactionManager
+
+<<concrete class>>
+DataSource Transaction Manager, Hibernate Transaction Manager, JPA Transaction Manager, JTA Transaction Manager
+
+Now, whenever we use @Transactional annotation, it will choose the appropriate transaction manager according to configuration setup in application properties or AppConfig java
+
+Heads Up - In java app config, we have to create two method, one should return DataSource which holds config details, other should return one object of PlatformTransactionManager, many are interfaces, so return appropriate concrete classes wherever required
+
+We can write transactions in two ways
+- Declarative ==> directly writing @Transactional
+- Programmatic ==>
+
+1. we can create a method and call getTransaction(), commit(), rollback() using instance of PlatformTransactionManager
+2. By using an instance of TransactionTemplate and calling it's execute method
+
+==> Propagation
+
+There is a question, if one transaction is happening and another method is called, that method2() will open a separate transaction or continue in this transaction itself? Question to this answer, will be given here, It all depends on the value of propagation
+
+@Transactional(propagation = Propagation.REQUIRED)
+
+Propagation.REQUIRED --> if parent txn is present use that, else create new
+Propagation.REQUIRED_NEW --> always create a txn for this method separately
+Propagation.SUPPORTS --> if parent txn is present use that, else proceed without txn
+Propagation.NOT_SUPPORTED --> pause the txn, because this method want to run without txn
+Propagation.MANDATORY --> use parent txn, if not there throw error
+Propagation.NEVER --> if parent has txn throw ex, else continue
+
+Again this can be used in two ways, declarative and programmatic
+
+Declarative - Using the annotation
+
+Programmatic - in getTransaction constructor you have to pass a object of DefaultTransactionDefinition, which can hold propagation options
+
+==> Isolation
+
+It tells us how the changes made by one transaction impacts other transaction
+
+Dirty Read Problem - It T1 does some txn but does not commit, T2 came and saw the result and committed, afterwards T1 did rollback, such problem is called dirty read problem
+
+Non Repeatable Read Problem - If we query for a row multiple times, it will give different values
+
+Phantom Read Problem - If we did a range query multiple times and we got different number of rows
+
+Isolation Level
+
+READ UNCOMMITTED - high concurrency (nothing solved)
+READ COMMITTED - dirty read solved
+REPEATABLE READ - dirty read + repeatable read solved
+SERIALIZABLE - low concurrency (all problems solved)
+
+default isolation level is READ COMMITTED, but it depends on database as well
+
+Types of lock acquired by isolation level,
+
+READ UNCOMMITTED - no locks acquired
+READ COMMITTED - read lock release after read, write lock holds till end of txn
+REPEATABLE READ - read lock till end of txn, write lock till end of txn
+SERIALIZABLE - read lock till end of txn, write lock till end of txn, range based locking, no new rows cannot be inserted in between

@@ -303,3 +303,83 @@ READ UNCOMMITTED - no locks acquired
 READ COMMITTED - read lock release after read, write lock holds till end of txn
 REPEATABLE READ - read lock till end of txn, write lock till end of txn
 SERIALIZABLE - read lock till end of txn, write lock till end of txn, range based locking, no new rows cannot be inserted in between
+
++--------------+
+|    ASYNC     |
++--------------+
+
+In java we already saw thread pool and its working, in a similar fashion we can achieve that in spring boot applications as well using @Async
+
+In our main class, we have to annotate it with @SpringBootApplication and @EnableAsync, this @EnableAsync annotation is used because spring has to create some extra classes for enablement of async features
+
+Once we did that, we can now mark any method with @Async annotation, so whenever this method will be called, it will run on a separate thread
+
+Now, there is a famous question, whether @Async annotation always creates a new thread for running a method?
+
+The answer depends, whether you are providing the configuration or not, If we did not give any configuration then it will choose "Simple Async Task Executor" which creates a new thread always
+
+Now, how to give our own configuration?
+In AppConfig Java, we have to create a bean of type "Executor", concrete class will be ThreadPoolTaskExecutor, we can do all the configurations in this and then it will be chosen as the default one
+
+It is also allowed to give the Executor bean name in @Async annotation to specify which thread pool to use, for example @Async("myThreadPoolExecutor")
+
+We should note one thing here, ThreadPoolTaskExecutor is a class specifically present in spring boot framework, In java we saw the ThreadPoolExecutor class was there
+
+If in your spring boot application, you try to create ThreadPoolExecutor then even though you use @Async annotation, it will choose the SimpleAsyncTaskExecutor, to make the Java ThreadPoolExecutor as default you have to specify its name in @Async annotation
+
+If you want that no matter what happens, you own-created Thread Pool should be used then you can make your AppConfig implements AsyncConfigurer, then no matter what happens, the thread pool configuration you created will be selected
+
+Conditions for Async to work properly :-
+
+1. If the calling method and the called method are within the same class, then the proxy mechanism is skipped because by default internal method calls are not intercepted by AOP in spring
+
+2. Method annotated with @Async must be public in nature, because AOP only works on public method
+
+Async and Transaction Management :-
+
+- If some method1() is txn in nature, and it calls a async method2(), then method2() is not related to txn, it will be a normal method
+
+- If some method1() is txn in nature, and it calls a async + txn method2(), so method2() will run in an independent txn, no matter what propagation is written in method1(), which means propagation does not propagate if method2() is async in nature
+
+Good practice --> call async method, and inside async method call a simple txn method
+
+Whenever you want to return a response from @Async method, you can make the return type as either Future or CompletableFuture, and while returning you can return new AsyncResult<>(value); and we can handle it from where it was called by using the methods of future or completable future
+
+Now let's talk about exception handling in @Async methods,
+
+Whenever the main threads calls @Async method, it will continue in new thread, if let's say some exception happened, so how can we handle that now,
+
+- we can use the try catch block inside the async method
+
+- we can create a class which implements AsyncUncaughtExceptionHandler, which needs to implement a method handleUncaughtException(), and you can write your custom handling logic here, Also, you need to make your AppConfig implements AsyncConfigurer and return an instance of AsyncUncaughtExceptionHandler
+
+If you don't handle it, spring boot will handle it with the default SimpleAsyncUncaughtExceptionHandler class
+
++---------------------+
+|    INTERCEPTORS     |
++---------------------+
+
+Interceptors are similar to what we saw in AOP, whenever a method is called, if we want to do something before, after or around that method, we can do it via interceptors
+
+Now how to create a interceptor?
+
+1. We can create a class MyInterceptor implements HandlerInterceptor which has to give definition for preHandle(), postHandle() and afterCompletion(), Also in our AppConfig we have to do implements WebMvcConfigurer, so we again have to implement a method addInterceptors and add the interceptor and paths, once we did this, any request falling on that path will be intercepted
+
+2. We can create our own annotation and mention it in pointcut with @annotation targeting our own annotation
+
+What is difference between postHandle() and afterCompletion() ?
+postHandle() will run if preHandle() is successful, but afterCompletion() will run even if its success as well as in the case of exception
+
+==> Filters vs. Interceptors
+
+Filter is a layer which is before servlets, whereas interceptors work after servlets and before controller invocation
+
+We can use a filter when we want to perform some generic action which is common for all the servlets, like spring security things etc whereas interceptors are used when we want to perform some specific action inside the selected servlet
+
+If there are multiple filters in filter layer, or multiple interceptors in interceptor layer then we can order them as well
+
+We already know how to create interceptors, now let's see how to create a filter :-
+
+We can make a class and make it child of Filter, now we can define three methods init(), doFilter(), destroy(), In these three, doFilter handles the business logic, You can continue the filter chain by calling filterChain.doFilter(), by calling this, the next filter will start running
+
+Again, we have to register the filters in AppConfig

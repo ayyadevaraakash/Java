@@ -383,3 +383,36 @@ We already know how to create interceptors, now let's see how to create a filter
 We can make a class and make it child of Filter, now we can define three methods init(), doFilter(), destroy(), In these three, doFilter handles the business logic, You can continue the filter chain by calling filterChain.doFilter(), by calling this, the next filter will start running
 
 Again, we have to register the filters in AppConfig
+
++------------------------------------------+
+|    EXCEPTION HANDLING IN SPRING BOOT     |
++------------------------------------------+
+
+When we are returning response entity, we can add the response in the manner of .status().headers().body(), we can keep the body at last because it returns a response entity, but others return a body builder object
+
+Status Code:
+202 Accepted - Request is successful, work has started in back end, maybe some batch processing or schedular etc
+
+304 Not Modified - Used for caching, it frontend ask some resource, we give it along with the last modified time, now again when frontend asks that same resource, we check in DB whether it was modified since then or not, if not we can give back 304 not modified
+
+429 Too Many Requests - When we have a rule of 10 requests in 1 minute, but we got 11th request
+
+If you create a @ExceptionHandler in controller and one in Global Exception Handler class, the one which is there in controller gets more priority
+
+In spring boot, any exception that will happen will be handled by these classes in order, if anyone handles it will not move forward,
+1. ExceptionHandlerExceptionResolve --> Controller Advice, Exception Handler
+2. ResponseStatusExceptionResolver --> @ResponseStatus
+3. DefaultHandlerExceptionResolver
+
+If you don't handle the exception and it is thrown at run time, so some one from above will handle and give some default response, but if we want full control, we should handle it and send back Response Entity
+
+If NPE or some custom exception is thrown, then no resolver can handle that, so it goes to "Default Error Attributes" where default things are set
+
+We can caught uncaught exception with @ResponseStatus annotation
+
+If the situation is as follows,
+@ExceptionHandler
+@ResponseStatus
+method()
+
+then exception handler will not work, so whatever we returned will not be shown, instead spring will take control and pass whatever is given in Response Status annotation

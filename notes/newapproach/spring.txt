@@ -416,3 +416,38 @@ If the situation is as follows,
 method()
 
 then exception handler will not work, so whatever we returned will not be shown, instead spring will take control and pass whatever is given in Response Status annotation
+
++------------------------+
+|    SPRING DATA JPA     |
++------------------------+
+
+Instead of traditional JDBC we should use JdbcTemplate, It reduces all the boiler plate code so we only have to call methods and send parameters to do any specific CRUD operations, Also in traditional JDBC, if any exception comes, it will always give "SQLException" which is very abstract in nature, whereas if we use JdbcTemplate, it gives granular level of exception like DuplicateKeyException, QueryTimeoutException etc
+
+HikariCP is a connection pool management library, if hikaricp is not there then we have to create connection to DB, do our task and close the connection everytime, but now hikari does all those things by creating reusable connections
+
+In spring data jpa, because of our application properties configuration EntityManagerFactory object is created during application startup, for each application property database, there is one EntityManagerFactory, this class acts as a factory to create entity managers
+
+In application properties, we have to specify the value of transaction type as either RESOURCE_LOCAL or JTA, first one is responsible for managing transactions for a specific db, but the latter one can handle transactions across multiple DBs
+
+EntityManager is an interface which provides methods like persist(), merge() etc to perform CRUD operations on entities, Internally when we use JPA save() etc, these either directly call entity manager methods or perform some additional coding with entity manager methods
+
+If JPA is internally calling entity manager methods, then why we are not using entity manager directly?
+
+We can use entity manager in this fashion,
+
+@PersistenceContext  --> @Autowired + some additional settings
+EntityManager entityManager
+
+then we can use it like entityManager.save(obj), Now it will give error because internally entityManager rejects insert, update and delete queries if they are not in a transaction, but when we use JPA method save(), internally it calls persist() along with @Transactional annotation
+
+Life cycle of an entity
+
+New (transient) -> persist() -> Managed (persist) -> flust() -> DB
+
+Managed -> detach / close entityManager -> Detached
+
+DB -> get() -> store in L1 -> give back to user
+
+Managed -> remove() -> removed in L1 -> flust() -> remove in DB
+
+Detached -> merge() -> Managed
